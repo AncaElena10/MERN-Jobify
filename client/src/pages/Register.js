@@ -18,21 +18,35 @@ const Register = () => {
     const [values, setValues] = useState(initialState);
 
     // global state and useNavigate
-    const { isLoading, showAlert } = useAppContext();
+    const { isLoading, showAlert, displayAlert, hideAlert } = useAppContext();
     console.log(isLoading)
 
     const toggleHasAccount = () => {
         setValues({ ...values, hasAccount: !values.hasAccount });
         // console.log(values.hasAccount)
+
+        // hideAlert();
     };
 
     const handleChange = (event) => {
+        // fill in the states with whatever the user is typing inside the inputs
+        setValues({ ...values, [event.target.name]: event.target.value });
         // console.log(event.target);
     };
 
     const onSubmit = (event) => {
         event.preventDefault();
         // console.log(event.target);
+
+        // grab values from states and destructure them
+        const { name, email, password, hasAccount } = values;
+        if (!email || !password || (!hasAccount && !name)) {
+            displayAlert();
+            return;
+        }
+        console.log(values);
+
+        // hideAlert();
     };
 
     return (
