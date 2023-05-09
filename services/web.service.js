@@ -17,6 +17,7 @@ const initialSetup = async () => {
         app.emit('started');
     });
 
+    app.use(express.json());
     app.use(appRouter, appMiddleware.notFound);
 };
 
