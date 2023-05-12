@@ -7,6 +7,7 @@
     "ansi-styles": "^3.2.1",
     "babel-plugin-styled-components": "^2.1.1",
     "babel-plugin-syntax-jsx": "^6.18.0",
+    "bcryptjs": "^2.4.3",
     "camelize": "^1.0.1",
     "chalk": "^2.4.2",
     "color-convert": "^1.9.3",
@@ -21,8 +22,10 @@
     "has-flag": "^3.0.0",
     "hoist-non-react-statics": "^3.3.2",
     "http-status-codes": "^2.2.0",
+    "joi": "^17.9.2",
     "js-tokens": "^4.0.0",
     "jsesc": "^2.5.2",
+    "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "loose-envify": "^1.4.0",
     "mongoose": "^7.1.0",
@@ -37,7 +40,8 @@
     "shallowequal": "^1.1.0",
     "styled-components": "^5.3.10",
     "supports-color": "^5.5.0",
-    "to-fast-properties": "^2.0.0"
+    "to-fast-properties": "^2.0.0",
+    "validator": "^13.9.0"
   },
   "devDependencies": {
     "nodemon": "2.0.22"
