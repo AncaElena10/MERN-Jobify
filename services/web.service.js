@@ -1,5 +1,6 @@
 const http = require('http');
 const express = require('express');
+// const cors = require('cors');
 
 const appRouter = require('../routes');
 const AppConstants = require('../config/constants');
@@ -17,6 +18,7 @@ const initialSetup = async () => {
         app.emit('started');
     });
 
+    // app.use(cors()); // using proxy instead
     app.use(express.json());
     app.use(appRouter, appMiddleware.notFound);
 };
