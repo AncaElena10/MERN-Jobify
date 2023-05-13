@@ -1,9 +1,9 @@
 const PublicConstants = {
     'E5000001': {
-        'errorCode': 'E5000001',
-        'errorMessage': 'Internal server error.',
-        'errorDescription': 'The application encountered an internal server error.',
-        'errorAction': 'Please retry the operation later or contact the administrator.'
+        'code': 'E5000001',
+        'message': 'Internal server error.',
+        'summary': 'The application encountered an internal server error.',
+        'action': 'Please retry the operation later or contact the administrator.'
     },
 };
 

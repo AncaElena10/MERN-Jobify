@@ -53,6 +53,10 @@ PrivateConstans.UserSchema.methods.createJWT = function () {
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_LIFETIME }
     );
+};
+
+PrivateConstans.UserSchema.methods.comparePassword = async function (incomingPassword) {
+    return await bcrypt.compare(incomingPassword, this.password);
 }
 
 const PublicConstants = {
