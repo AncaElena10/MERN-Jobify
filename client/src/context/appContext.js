@@ -10,12 +10,9 @@ import { useReducer, useContext } from 'react';
 import {
     DISPLAY_ALERT,
     // HIDE_ALERT,
-    REGISTER_USER_BEGIN,
-    REGISTER_USER_SUCCESS,
-    REGISTER_USER_ERROR,
-    LOGIN_USER_BEGIN,
-    LOGIN_USER_SUCCESS,
-    LOGIN_USER_ERROR
+    USER_OPERATION_BEGIN,
+    USER_OPERATION_SUCCESS,
+    USER_OPERATION_ERROR
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -62,53 +59,20 @@ const AppProvider = ({ children }) => {
         localStorage.removeItem('location');
     };
 
-    const registerUser = async (currentUser) => {
-        dispatch({ type: REGISTER_USER_BEGIN });
+    const setupUser = async ({ currentUser, endpoint, alertText }) => {
+        dispatch({ type: USER_OPERATION_BEGIN });
 
         try {
-            const response = await axios.post('/api/v1/register', currentUser);
+            const response = await axios.post(`/api/v1/${endpoint}`, currentUser);
             const payload = {
                 user: { ...currentUser },
                 token: response.headers['token'],
-                location: '' // TODO
-            };
-
-            // console.log(response)
-            // console.log('AAAAAA' + JSON.stringify(response.data));
-            // console.log(token);
-
-            dispatch({
-                type: REGISTER_USER_SUCCESS,
-                payload: payload
-            });
-
-            addUserToLocalStorage(payload);
-        } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to register the user: ${error.response}`);
-
-            // TODO - toaster with backend data in case of success/failure
-            // atm just add the message
-
-            dispatch({
-                type: REGISTER_USER_ERROR,
-                payload: { msg: `${error.response.data.message}` }
-            });
-        }
-    };
-
-    const loginUser = async (currentUser) => {
-        dispatch({ type: LOGIN_USER_BEGIN });
-
-        try {
-            const response = await axios.post('/api/v1/login', currentUser);
-            const payload = {
-                user: { ...currentUser },
-                token: response.headers['token'],
-                location: '' // TODO
+                location: '', // TODO,
+                alertText: alertText
             };
 
             dispatch({
-                type: LOGIN_USER_SUCCESS,
+                type: USER_OPERATION_SUCCESS,
                 payload: payload
             });
 
@@ -116,13 +80,13 @@ const AppProvider = ({ children }) => {
         } catch (error) {
             console.log(`[APP-CONTEXT] Error while trying to login the user: ${error.response}`);
             dispatch({
-                type: LOGIN_USER_ERROR,
+                type: USER_OPERATION_ERROR,
                 payload: { msg: `${error.response.data.message}` }
             });
         }
     };
 
-    return (<AppContext.Provider value={{ ...state, displayAlert, registerUser, loginUser }}>
+    return (<AppContext.Provider value={{ ...state, displayAlert, setupUser }}>
         {children}
     </AppContext.Provider>);
 };

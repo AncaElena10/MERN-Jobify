@@ -4,12 +4,9 @@
 import {
     HIDE_ALERT,
     DISPLAY_ALERT,
-    REGISTER_USER_BEGIN,
-    REGISTER_USER_SUCCESS,
-    REGISTER_USER_ERROR,
-    LOGIN_USER_BEGIN,
-    LOGIN_USER_SUCCESS,
-    LOGIN_USER_ERROR
+    USER_OPERATION_BEGIN,
+    USER_OPERATION_SUCCESS,
+    USER_OPERATION_ERROR
 } from './actions';
 
 const reducer = (state, action) => {
@@ -34,13 +31,13 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case REGISTER_USER_BEGIN:
+        case USER_OPERATION_BEGIN:
             obj = {
                 isLoading: true
             };
             return { ...toReturn, ...obj };
 
-        case REGISTER_USER_SUCCESS:
+        case USER_OPERATION_SUCCESS:
             obj = {
                 isLoading: false,
                 token: action.payload.token,
@@ -49,39 +46,11 @@ const reducer = (state, action) => {
                 jobLocation: action.payload.location,
                 showAlert: true,
                 alertType: 'success',
-                alertText: 'User Created! Redirecting...',
+                alertText: action.payload.alertText,
             };
             return { ...toReturn, ...obj };
 
-        case REGISTER_USER_ERROR:
-            obj = {
-                isLoading: false,
-                showAlert: true,
-                alertType: 'danger',
-                alertText: action.payload.msg,
-            };
-            return { ...toReturn, ...obj };
-
-        case LOGIN_USER_BEGIN:
-            obj = {
-                isLoading: true
-            };
-            return { ...toReturn, ...obj };
-
-        case LOGIN_USER_SUCCESS:
-            obj = {
-                isLoading: false,
-                token: action.payload.token,
-                user: action.payload.user,
-                userLocation: action.payload.location,
-                jobLocation: action.payload.location,
-                showAlert: true,
-                alertType: 'success',
-                alertText: 'Login Successful! Redirecting...',
-            };
-            return { ...toReturn, ...obj };
-
-        case LOGIN_USER_ERROR:
+        case USER_OPERATION_ERROR:
             obj = {
                 isLoading: false,
                 showAlert: true,
