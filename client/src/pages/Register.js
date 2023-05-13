@@ -19,7 +19,7 @@ const Register = () => {
     const navigate = useNavigate();
     const [values, setValues] = useState(initialState);
     // global state
-    const { user, isLoading, showAlert, displayAlert, registerUser, loginUser } = useAppContext(); // from appContext.js
+    const { user, isLoading, showAlert, displayAlert, setupUser } = useAppContext(); // from appContext.js
 
     const toggleHasAccount = () => {
         setValues({ ...values, hasAccount: !values.hasAccount });
@@ -46,10 +46,10 @@ const Register = () => {
         const currentUser = { name, email, password };
         if (hasAccount) {
             console.log('[REGISTER] Already has an account'); // TODO - create general config/constants for tags&others
-            loginUser(currentUser);
+            setupUser({ currentUser, endpoint: 'login', alertText: 'Login Successful! Redirecting...' });
         } else {
             console.log('[REGISTER] User does not have an accout.');
-            registerUser(currentUser);
+            setupUser({ currentUser, endpoint: 'register', alertText: 'Account created! Redirecting...' });
         }
     };
 
