@@ -1,9 +1,9 @@
 const PublicConstants = {
     'E2010001': {
-        'errorCode': 'E2010001',
-        'errorMessage': 'The data was saved successfully.',
-        'errorDescription': 'The data was saved successfully.',
-        'errorAction': 'No action to take.'
+        'code': 'E2010001',
+        'message': 'The data was saved successfully.',
+        'summary': 'The data was saved successfully.',
+        'action': 'No action to take.'
     },
 };
 
