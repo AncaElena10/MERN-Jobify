@@ -13,7 +13,7 @@ const PrivateConstants = {
             .max(20)
             .required(),
         password: Joi.string()
-            .min(3)
+            .min(3) // TODO - change this
             .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
             .required(),
         email: Joi.string()
@@ -49,10 +49,10 @@ const PublicMethods = {
             }
 
             const userSavedToDb = await User.model.create(req.body);
-            
+
             // the token used in communication between backend and frontend
             const token = userSavedToDb.createJWT();
-
+            res.setHeader('token', token);
             res.status(StatusCodes.CREATED).send(ErrorMessages.CREATED_MESSAGES.E2010001);
         } catch (error) {
             console.error(`An error occurred while trying to register user: ${error}\n${error.stack}`);

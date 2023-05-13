@@ -1,10 +1,18 @@
-import React from 'react';
-import { HIDE_ALERT, DISPLAY_ALERT } from './actions';
 
-const reducer = (state, action) => {
+/* used to populate the states with values received from appContext */
+
+import {
+    HIDE_ALERT,
+    DISPLAY_ALERT,
+    REGISTER_USER_BEGIN,
+    REGISTER_USER_SUCCESS,
+    REGISTER_USER_ERROR
+} from './actions';
+
+const reducer = (state, action) => { // TODO - use switch case
     // console.log(action.type)''
     if (action.type === DISPLAY_ALERT) {
-        console.log('[REDUCERS] action - display');
+        console.log('[REDUCERS] action - display alert');
         return {
             ...state,
             showAlert: true, // global state
@@ -14,12 +22,47 @@ const reducer = (state, action) => {
     }
 
     if (action.type === HIDE_ALERT) {
-        console.log('[REDUCERS] action - hide');
+        console.log('[REDUCERS] action - hide alert');
         return {
             ...state,
             showAlert: false, // global state
             alertType: '',  // global state
             alertText: ''  // global state
+        };
+    }
+
+    if (action.type === REGISTER_USER_BEGIN) {
+        console.log('[REDUCERS] action - user registration begins');
+        return {
+            ...state,
+            isLoading: true
+        };
+    }
+
+    if (action.type === REGISTER_USER_SUCCESS) {
+        console.log('[REDUCERS] action - user registration success');
+        console.log(action)
+        return {
+            ...state,
+            isLoading: false,
+            token: action.payload.token,
+            user: action.payload.user,
+            userLocation: action.payload.location,
+            jobLocation: action.payload.location,
+            showAlert: true,
+            alertType: 'success',
+            alertText: 'User Created! Redirecting...',
+        };
+    }
+
+    if (action.type === REGISTER_USER_ERROR) {
+        console.log('[REDUCERS] action - user registration error');
+        return {
+            ...state,
+            isLoading: false,
+            showAlert: true,
+            alertType: 'danger',
+            alertText: action.payload.msg,
         };
     }
 

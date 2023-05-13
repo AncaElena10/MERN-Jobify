@@ -30,14 +30,13 @@ const PrivateConstans = {
         password: {
             type: String,
             require: [true, 'Please provide password'],
-            minLength: 6,
+            minLength: 3, // TODO - change this
             select: false,
         },
         location: {
             type: String,
             maxLength: 20,
             trim: true,
-            default: 'My City',
         },
     })
 };
@@ -49,7 +48,6 @@ PrivateConstans.UserSchema.pre('save', async function () {
 });
 
 PrivateConstans.UserSchema.methods.createJWT = function () {
-    console.log(this)
     return jwt.sign(
         { userId: this._id },
         process.env.JWT_SECRET,
