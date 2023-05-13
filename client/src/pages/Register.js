@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Wrapper from '../assets/wrappers/RegisterPage';
 
@@ -15,17 +16,14 @@ const initialState = {
 };
 
 const Register = () => {
+    const navigate = useNavigate();
     const [values, setValues] = useState(initialState);
-
-    // global state and useNavigate
-    const { isLoading, showAlert, displayAlert, hideAlert } = useAppContext();
-    console.log(isLoading)
+    // global state
+    const { user, isLoading, showAlert, displayAlert, registerUser } = useAppContext(); // from appContext.js
 
     const toggleHasAccount = () => {
         setValues({ ...values, hasAccount: !values.hasAccount });
         // console.log(values.hasAccount)
-
-        // hideAlert();
     };
 
     const handleChange = (event) => {
@@ -44,10 +42,26 @@ const Register = () => {
             displayAlert();
             return;
         }
-        console.log(values);
 
-        // hideAlert();
+        const currentUser = { name, email, password };
+        if (hasAccount) {
+            console.log('[REGISTER] Already has an account'); // TODO - create general config/constants for tags&others
+        } else {
+            console.log('[REGISTER] User does not have an accout.');
+            registerUser(currentUser);
+        }
+
+        // console.log(values);
     };
+
+    useEffect(() => {
+        // console.log(user)
+        if (user) { // if user does exist
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
+        }
+    }, [user, navigate]); // use this everytime the user or navigate changes
 
     return (
         <Wrapper className='full-page'>
@@ -78,7 +92,7 @@ const Register = () => {
                     alue={values.password}
                     handleChange={handleChange}
                 />
-                <button type='submit' className='btn btn-block'>Submit</button>
+                <button type='submit' className='btn btn-block' disabled={isLoading}>Submit</button>
                 <p>
                     {values.hasAccount ? 'Not a member yet?' : 'Already a member?'}
                     <button

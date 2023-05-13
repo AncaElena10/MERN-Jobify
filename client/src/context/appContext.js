@@ -1,17 +1,29 @@
-// used to set global states for the entire app
+/* used to set global states (initial values) for the entire app */
+/* grabs the data from functions (Register.js for eg.) and sends it to reducers */
 
 import React from 'react';
+import axios from 'axios';
 
 import reducer from './reducers';
 
 import { useReducer, useContext } from 'react';
-import { DISPLAY_ALERT, HIDE_ALERT } from './actions';
+import {
+    DISPLAY_ALERT,
+    // HIDE_ALERT,
+    REGISTER_USER_BEGIN,
+    REGISTER_USER_SUCCESS,
+    REGISTER_USER_ERROR
+} from './actions';
 
 const initialState = {
     isLoading: false,
     showAlert: false,
     alertText: '',
     alertType: '',
+    user: null,
+    token: null,
+    userLocation: '',
+    joblocation: '',
 };
 
 const AppContext = React.createContext();
@@ -31,11 +43,39 @@ const AppProvider = ({ children }) => {
     //     }, 3000);
     // };
 
-    const hideAlert = () => {
-        dispatch({ type: HIDE_ALERT });
+    const registerUser = async (currentUser) => {
+        dispatch({ type: REGISTER_USER_BEGIN });
+
+        try {
+            const response = await axios.post('/api/v1/register', currentUser);
+            const payload = {
+                user: { ...currentUser },
+                token: response.headers['token'],
+                location: '' // TODO
+            };
+
+            // console.log(response)
+            // console.log('AAAAAA' + JSON.stringify(response.data));
+            // console.log(token);
+
+            dispatch({
+                type: REGISTER_USER_SUCCESS,
+                payload: payload
+            });
+        } catch (error) {
+            console.log(`[APP-CONTEXT] Error while trying to register the user: ${error.response}`);
+
+            // TODO - toaster with backend data in case of success/failure
+            // atm just append the description and the action
+
+            dispatch({
+                type: REGISTER_USER_ERROR,
+                payload: { msg: `${error.response.data.errorDescription} ${error.response.data.errorAction}` }
+            });
+        }
     };
 
-    return (<AppContext.Provider value={{ ...state, displayAlert, hideAlert }}>
+    return (<AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
         {children}
     </AppContext.Provider>);
 };
