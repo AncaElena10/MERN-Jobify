@@ -1,6 +1,7 @@
 const http = require('http');
 const express = require('express');
 // const cors = require('cors');
+const morgan = require('morgan');
 
 const appRouter = require('../routes');
 const AppConstants = require('../config/constants');
@@ -19,6 +20,9 @@ const initialSetup = async () => {
     });
 
     // app.use(cors()); // using proxy instead
+    if (process.env.NODE_ENV !== 'production') {
+        app.use(morgan('dev'));
+    }
     app.use(express.json());
     app.use(appRouter, appMiddleware.notFound);
 };
