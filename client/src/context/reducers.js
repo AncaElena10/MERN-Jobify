@@ -1,4 +1,3 @@
-
 /* used to populate the states with values received from appContext */
 
 import {
@@ -8,7 +7,9 @@ import {
     USER_OPERATION_SUCCESS,
     USER_OPERATION_ERROR,
     TOGGLE_SIDEBAR,
+    LOGOUT_USER,
 } from './actions';
+import { initialState } from './appContext';
 
 const reducer = (state, action) => {
     let toReturn = {
@@ -65,6 +66,15 @@ const reducer = (state, action) => {
                 showSidebar: !state.showSidebar
             };
             return { ...toReturn, ...obj };
+
+        case LOGOUT_USER:
+            obj = {
+                token: null,
+                user: null,
+                userLocation: '',
+                jobLocation: '',
+            };
+            return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
 
         default:
             throw new Error(`[REDUCERS] action ${action.type} not found`);

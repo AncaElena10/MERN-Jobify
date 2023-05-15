@@ -14,6 +14,7 @@ import {
     USER_OPERATION_SUCCESS,
     USER_OPERATION_ERROR,
     TOGGLE_SIDEBAR,
+    LOGOUT_USER,
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -88,6 +89,11 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    const logoutUser = () => {
+        dispatch({ type: LOGOUT_USER });
+        removeUserFromLocalStorage();
+    }
+
     const toggleSidebar = () => {
         dispatch({ type: TOGGLE_SIDEBAR });
     };
@@ -98,7 +104,8 @@ const AppProvider = ({ children }) => {
                 ...state,
                 displayAlert,
                 setupUser,
-                toggleSidebar
+                toggleSidebar,
+                logoutUser,
             }
         }>
             {children}
