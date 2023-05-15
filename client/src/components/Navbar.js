@@ -8,7 +8,8 @@ import { useAppContext } from '../context/appContext';
 
 const Navbar = () => {
     const [showLogout, setShowLogout] = useState(false);
-    const { toggleSidebar } = useAppContext();
+    const { user, toggleSidebar, logoutUser } = useAppContext();
+    console.log(user)
     return (
         <Wrapper>
             <div className='nav-center'>
@@ -22,11 +23,11 @@ const Navbar = () => {
                 <div className='btn-container'>
                     <button className='btn' type='button' onClick={() => setShowLogout(!showLogout)}>
                         <AiOutlineUser />
-                        tenzo
+                        {user?.name}
                         <AiOutlineCaretDown />
                     </button>
                     <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
-                        <button className='dropdown-btn' type='button' onClick={() => console.log('logout user')} >
+                        <button className='dropdown-btn' type='button' onClick={logoutUser} >
                             logout
                         </button>
                     </div>
