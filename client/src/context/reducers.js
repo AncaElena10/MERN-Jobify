@@ -6,7 +6,8 @@ import {
     DISPLAY_ALERT,
     USER_OPERATION_BEGIN,
     USER_OPERATION_SUCCESS,
-    USER_OPERATION_ERROR
+    USER_OPERATION_ERROR,
+    TOGGLE_SIDEBAR,
 } from './actions';
 
 const reducer = (state, action) => {
@@ -56,6 +57,12 @@ const reducer = (state, action) => {
                 showAlert: true,
                 alertType: 'danger',
                 alertText: action.payload.msg,
+            };
+            return { ...toReturn, ...obj };
+
+        case TOGGLE_SIDEBAR:
+            obj = {
+                showSidebar: !state.showSidebar
             };
             return { ...toReturn, ...obj };
 
