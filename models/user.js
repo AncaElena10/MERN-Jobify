@@ -16,7 +16,7 @@ const PrivateConstans = {
             type: String,
             maxLength: 20,
             trim: true,
-            default: 'lastName',
+            default: '',
         },
         email: {
             type: String,
@@ -37,6 +37,7 @@ const PrivateConstans = {
             type: String,
             maxLength: 20,
             trim: true,
+            default: '',
         },
     })
 };

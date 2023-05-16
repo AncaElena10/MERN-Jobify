@@ -1,7 +1,7 @@
 const StatusCodes = require('http-status-codes').StatusCodes;
 const Joi = require('joi');
 
-const User = require('../models/user');
+const UserService = require('../services/user.service');
 const ErrorMessages = require('../messages');
 
 const PrivateConstants = {
@@ -31,14 +31,21 @@ const PrivateConstants = {
 };
 
 const PrivateMethods = {
-
+    defaultUser: (userBody) => {
+        return {
+            name: userBody.name,
+            lastName: userBody.lastName,
+            email: userBody.email,
+            location: userBody.location,
+        }
+    }
 };
 
 const PublicMethods = {
     register: async (req, res) => {
         try {
             /* empty db << for testing purposes only >> */
-            await User.model.deleteMany({});
+            await UserService.deleteAllUsers();
 
             const reqBody = req.body;
             const validationResult = PrivateConstants.RegisterSchemaValidator.validate(reqBody);
@@ -50,18 +57,21 @@ const PublicMethods = {
             }
 
             // unique values
-            const emailExists = await User.model.findOne({ email: reqBody.email });
-            if (emailExists) {
-                console.debug(`E-mail is not unique`);
+            const currentUser = await UserService.getUserByEmail(reqBody.email);
+            if (currentUser) {
+                console.debug(`E-mail is not unique, user already exists.`);
                 return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000002);
             }
 
-            const userSavedToDb = await User.model.create(req.body);
+            const userSavedToDb = await UserService.insertUser(reqBody);
 
             // the token used in communication between backend and frontend
             const token = userSavedToDb.createJWT();
+            const userBodyHeader = PrivateMethods.defaultUser(userSavedToDb);
 
             res.setHeader('token', token);
+            res.setHeader('user', JSON.stringify(userBodyHeader));
+
             res.status(StatusCodes.CREATED).send(ErrorMessages.CREATED_MESSAGES.E2010001);
         } catch (error) {
             console.error(`An error occurred while trying to register user: ${error}\n${error.stack}`);
@@ -80,7 +90,7 @@ const PublicMethods = {
                 return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000003);
             }
 
-            const currentUser = await User.model.findOne({ email: reqBody.email }).select('+password');
+            const currentUser = await UserService.getUserByEmail(reqBody.email);
             if (!currentUser) {
                 console.debug(`User with email address ${reqBody.email} not found.`);
                 return res.status(StatusCodes.UNAUTHORIZED).send(ErrorMessages.UNAUTHORIZED_MESSAGES.E4010001);
@@ -93,8 +103,11 @@ const PublicMethods = {
             }
 
             const token = currentUser.createJWT();
+            const userBodyHeader = PrivateMethods.defaultUser(currentUser);
 
             res.setHeader('token', token);
+            res.setHeader('user', JSON.stringify(userBodyHeader));
+
             res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
         } catch (error) {
             console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);

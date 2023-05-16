@@ -68,7 +68,7 @@ const AppProvider = ({ children }) => {
         try {
             const response = await axios.post(`/api/v1/${endpoint}`, currentUser);
             const payload = {
-                user: { ...currentUser },
+                user: JSON.parse(response.headers['user']),
                 token: response.headers['token'],
                 location: '', // TODO,
                 alertText: alertText
