@@ -9,7 +9,7 @@ import { useAppContext } from '../context/appContext';
 const Navbar = () => {
     const [showLogout, setShowLogout] = useState(false);
     const { user, toggleSidebar, logoutUser } = useAppContext();
-    console.log(user)
+
     return (
         <Wrapper>
             <div className='nav-center'>
@@ -35,6 +35,6 @@ const Navbar = () => {
             </div >
         </Wrapper >
     );
-}
+};
 
 export default Navbar;
