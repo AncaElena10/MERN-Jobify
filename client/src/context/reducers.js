@@ -8,6 +8,9 @@ import {
     USER_OPERATION_ERROR,
     TOGGLE_SIDEBAR,
     LOGOUT_USER,
+    USER_UPDATE_BEGIN,
+    USER_UPDATE_SUCCESS,
+    USER_UPDATE_ERROR,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -75,6 +78,34 @@ const reducer = (state, action) => {
                 jobLocation: '',
             };
             return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
+
+        case USER_UPDATE_BEGIN:
+            obj = {
+                isLoading: true
+            };
+            return { ...toReturn, ...obj };
+
+        case USER_UPDATE_SUCCESS:
+            obj = {
+                isLoading: false,
+                token: action.payload.token,
+                user: action.payload.user,
+                userLocation: action.payload.location,
+                jobLocation: action.payload.location,
+                showAlert: true,
+                alertType: 'success',
+                alertText: 'User Profile Updated!',
+            };
+            return { ...toReturn, ...obj };
+
+        case USER_UPDATE_ERROR:
+            obj = {
+                isLoading: false,
+                showAlert: true,
+                alertType: 'danger',
+                alertText: action.payload.msg,
+            };
+            return { ...toReturn, ...obj };
 
         default:
             throw new Error(`[REDUCERS] action ${action.type} not found`);

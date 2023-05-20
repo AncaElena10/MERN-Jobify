@@ -14,6 +14,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 // private APIs - require the token
 router.patch('/updateUser', authMiddleware.auth, authController.update);
+router.get('/user', authMiddleware.auth, authController.getOne);
 
 // jobs
 // private APIs - require the token

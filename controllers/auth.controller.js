@@ -7,6 +7,7 @@ const ErrorMessages = require('../messages');
 const PrivateConstants = {
     RequiredPropertiesRegister: ['name', 'password', 'email'],
     RequiredPropertiesLogin: ['password', 'email'],
+    RequiredPropertiesUpdate: ['name', 'lastName', 'email', 'location'],
     RegisterSchemaValidator: Joi.object({
         name: Joi.string()
             .alphanum()
@@ -23,6 +24,24 @@ const PrivateConstants = {
     }).options({ allowUnknown: true }),
     LoginSchemaValidator: Joi.object({
         password: Joi.string()
+            .required(),
+        email: Joi.string()
+            .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
+            .required(),
+    }).options({ allowUnknown: true }),
+    UpdateSchemaValidator: Joi.object({
+        name: Joi.string()
+            .alphanum()
+            .min(3)
+            .max(20)
+            .required(),
+        lastName: Joi.string()
+            .alphanum()
+            .min(3)
+            .max(20)
+            .required(),
+        location: Joi.string()
+            .alphanum()
             .required(),
         email: Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
@@ -116,7 +135,63 @@ const PublicMethods = {
     },
 
     update: async (req, res) => {
-        res.send('update user');
+        try {
+            const reqBody = req.body;
+            const validationResult = PrivateConstants.UpdateSchemaValidator.validate(reqBody);
+
+            // missing/invalid properties
+            if ((validationResult.error && validationResult.error.details)) {
+                console.debug(`The following properties must be provided: ${JSON.stringify(PrivateConstants.RequiredPropertiesUpdate)}`);
+                return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000004);
+            }
+
+            const userId = req.user.userId
+            let user = await UserService.getUserById(userId);
+
+            if (!user) {
+                console.debug(`User ${userId} not found`);
+                throw new Error(`User not found.`);
+            }
+
+            const userToUpdateBody = {
+                name: reqBody.name,
+                lastName: reqBody.lastName,
+                email: reqBody.email,
+                location: reqBody.location,
+            };
+            await UserService.updateUser(userToUpdateBody, userId);
+            user = await UserService.getUserById(userId);
+            const token = user.createJWT();
+
+            res.setHeader('token', token);
+            res.setHeader('user', JSON.stringify(userToUpdateBody));
+
+            res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
+        } catch (error) {
+            console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
+    },
+
+    getOne: async (req, res) => {
+        try {
+            const userId = req.user.userId
+            const user = await UserService.getUserById(userId);
+            const token = user.createJWT();
+
+            if (!user) {
+                console.debug(`User ${userId} not found`);
+                throw new Error(`User not found.`);
+            }
+
+            res.setHeader('token', token);
+            res.setHeader('user', JSON.stringify(user));
+
+            res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
+        } catch (error) {
+            console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
     },
 };
 

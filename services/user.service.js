@@ -13,7 +13,15 @@ const PublicMethods = {
         try {
             return await User.model.findOne({ email: email }).select('+password');
         } catch (error) {
-            console.log(`Error occured while trying to get user from db: ${error}\n ${error.stack}`);
+            console.log(`Error occured while trying to get user by email from db: ${error}\n ${error.stack}`);
+        }
+    },
+
+    getUserById: async (id) => {
+        try {
+            return await User.model.findOne({ _id: id }, { _id: 0, __v: 0 });
+        } catch (error) {
+            console.log(`Error occured while trying to get user by id from db: ${error}\n ${error.stack}`);
         }
     },
 
@@ -23,7 +31,15 @@ const PublicMethods = {
         } catch (error) {
             console.log(`Error occured while trying to delete all users: ${error}\n ${error.stack}`);
         }
-    }
+    },
+
+    updateUser: async (body, id) => {
+        try {
+            return await User.model.updateOne({ _id: id }, { $set: body });
+        } catch (error) {
+            console.log(`Error occured while trying to update the user: ${error}\n ${error.stack}`);
+        }
+    },
 }
 
 module.exports = { ...PublicMethods };

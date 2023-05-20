@@ -1,5 +1,5 @@
 /* used to set global states (initial values) for the entire app */
-/* grabs the data from functions (Register.js for eg.) and sends it to reducers */
+/* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
 import React from 'react';
 import axios from 'axios';
@@ -9,12 +9,15 @@ import reducer from './reducers';
 import { useReducer, useContext } from 'react';
 import {
     DISPLAY_ALERT,
-    // HIDE_ALERT,
+    HIDE_ALERT,
     USER_OPERATION_BEGIN,
     USER_OPERATION_SUCCESS,
     USER_OPERATION_ERROR,
     TOGGLE_SIDEBAR,
     LOGOUT_USER,
+    USER_UPDATE_BEGIN,
+    USER_UPDATE_SUCCESS,
+    USER_UPDATE_ERROR,
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -37,18 +40,40 @@ const AppContext = React.createContext();
 const AppProvider = ({ children }) => {
     const [state, dispatch] = useReducer(reducer, initialState);
 
+    const authFetch = axios.create({
+        baseURL: '/api/v1',
+    });
+
+    // request
+    authFetch.interceptors.request.use((config) => {
+        config.headers['Authorization'] = `Bearer ${state.token}`;
+        return config;
+    }, (error) => {
+        return Promise.reject(error);
+    });
+
+    // response
+    authFetch.interceptors.response.use((response) => {
+        return response;
+    }, (error) => {
+        console.log(error.response);
+        if (error.response.status === 401) {
+            console.log('AUTH ERROR!');
+        }
+        return Promise.reject(error);
+    });
+
     const displayAlert = () => {
-        // console.log(DISPLAY_ALERT);
         dispatch({ type: DISPLAY_ALERT });
-        // hideAlert(); - in case I use the timeout one
+        hideAlert();
     };
 
     // hide the alert after some time
-    // const hideAlert = () => {
-    //     setTimeout(() => {
-    //         dispatch({ type: HIDE_ALERT });
-    //     }, 3000);
-    // };
+    const hideAlert = () => {
+        setTimeout(() => {
+            dispatch({ type: HIDE_ALERT });
+        }, 3000);
+    };
 
     const addUserToLocalStorage = ({ user, token, location }) => {
         localStorage.setItem('user', JSON.stringify(user));
@@ -86,12 +111,42 @@ const AppProvider = ({ children }) => {
                 type: USER_OPERATION_ERROR,
                 payload: { msg: `${error.response.data.message}` }
             });
+        } finally {
+            hideAlert();
         }
     };
 
     const logoutUser = () => {
         dispatch({ type: LOGOUT_USER });
         removeUserFromLocalStorage();
+    }
+
+    const updateUser = async (currentUser) => {
+        dispatch({ type: USER_UPDATE_BEGIN });
+
+        try {
+            const response = await authFetch.patch(`updateUser`, currentUser);
+            const payload = {
+                user: JSON.parse(response.headers['user']),
+                token: response.headers['token'],
+                location: (JSON.parse(response.headers['user'])).location,
+            };
+
+            dispatch({
+                type: USER_UPDATE_SUCCESS,
+                payload: payload
+            });
+
+            addUserToLocalStorage(payload);
+        } catch (error) {
+            console.log(`[APP-CONTEXT] Error while trying to update the user: ${error.response.data.message}`);
+            dispatch({
+                type: USER_UPDATE_ERROR,
+                payload: { msg: `${error.response.data.message}` }
+            });
+        } finally {
+            hideAlert();
+        }
     }
 
     const toggleSidebar = () => {
@@ -106,6 +161,7 @@ const AppProvider = ({ children }) => {
                 setupUser,
                 toggleSidebar,
                 logoutUser,
+                updateUser,
             }
         }>
             {children}
