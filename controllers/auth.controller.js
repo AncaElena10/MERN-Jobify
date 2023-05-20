@@ -168,14 +168,14 @@ const PublicMethods = {
 
             res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
         } catch (error) {
-            console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);
+            console.error(`An error occurred while trying to update user: ${error}\n${error.stack}`);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
         }
     },
 
     getOne: async (req, res) => {
         try {
-            const userId = req.user.userId
+            const userId = req.user.userId;
             const user = await UserService.getUserById(userId);
             const token = user.createJWT();
 

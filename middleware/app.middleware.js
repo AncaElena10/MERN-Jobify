@@ -5,12 +5,12 @@ const ErrorMessages = require('../messages');
 
 const PublicMethods = {
     notFound: (req, res) => {
-        console.log(`[MIDDLEWARE] Got the req PATH ${req.originalUrl} that does not exist.`);
+        console.debug(`[MIDDLEWARE] Got the req PATH ${req.originalUrl} that does not exist.`);
 
         res.status(StatusCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND_MESSAGES.E4040001);
     },
     serverError: (error, req, res, next) => {
-        console.log(`[MIDDLEWARE] Error occured while processing the request: ${error}\n${error.stack}`);
+        console.debug(`[MIDDLEWARE] Error occured while processing the request: ${error}\n${error.stack}`);
 
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
     },
@@ -18,7 +18,7 @@ const PublicMethods = {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer')) {
-            console.log(`[MIDDLEWARE] User is not authenticated, unable to access the PATH ${req.originalUrl}.`);
+            console.debug(`[MIDDLEWARE] User is not authenticated, unable to access the PATH ${req.originalUrl}.`);
             return res.status(StatusCodes.UNAUTHORIZED).send(ErrorMessages.UNAUTHORIZED_MESSAGES.E4010002);
         }
 
@@ -30,7 +30,7 @@ const PublicMethods = {
 
             next();
         } catch (error) {
-            console.error(`An error occurred while trying verify the token ${error}\n${error.stack}`);
+            console.error(`An error occurred while trying verify the token: ${error}`);
             return res.status(StatusCodes.UNAUTHORIZED).send(ErrorMessages.UNAUTHORIZED_MESSAGES.E4010002);
         }
     }
