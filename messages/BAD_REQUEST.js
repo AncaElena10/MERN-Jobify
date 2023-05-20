@@ -23,6 +23,24 @@ const PublicConstants = {
         'summary': 'The following properties must be provided and must be valid: name, lastname, email, location.',
         'action': 'Please retry the operation with a valid body.'
     },
+    'E4000005': {
+        'code': 'E4000005',
+        'message': 'Invalid body.',
+        'summary': 'The following properties must be provided and must be valid: company, position.',
+        'action': 'Please retry the operation with a valid body.'
+    },
+    'E4000006': {
+        'code': 'E4000006',
+        'message': 'Invalid value for status.',
+        'summary': 'The status property must be provided and must have one of the values: interview, declined, pending.',
+        'action': 'Please retry the operation with a valid body.'
+    },
+    'E4000007': {
+        'code': 'E4000007',
+        'message': 'Invalid value for jobType.',
+        'summary': 'The jobType property must be provided and must have one of the values: full-time, part-time, remote, intership.',
+        'action': 'Please retry the operation with a valid body.'
+    }
 };
 
 module.exports = { ...PublicConstants };

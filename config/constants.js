@@ -8,6 +8,10 @@ const Constants = {
     ServiceDetails: {
         Name: serviceName
     },
+    RouteKeys: {
+        auth: '/auth',
+        jobs: '/jobs',
+    }
 }
 
 module.exports = Constants;
