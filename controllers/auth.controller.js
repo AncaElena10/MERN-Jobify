@@ -41,7 +41,6 @@ const PrivateConstants = {
             .max(20)
             .required(),
         location: Joi.string()
-            .alphanum()
             .required(),
         email: Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
@@ -153,7 +152,7 @@ const PublicMethods = {
                 throw new Error(`User not found.`);
             }
 
-            const userToUpdateBody = {
+            const userToUpdateBody = { // TODO - use defaultUser
                 name: reqBody.name,
                 lastName: reqBody.lastName,
                 email: reqBody.email,
