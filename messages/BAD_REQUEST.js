@@ -17,6 +17,12 @@ const PublicConstants = {
         'summary': 'The following properties must be provided and must be valid: password, email.',
         'action': 'Please retry the operation with a valid body.'
     },
+    'E4000004': {
+        'code': 'E4000004',
+        'message': 'Invalid body.',
+        'summary': 'The following properties must be provided and must be valid: name, lastname, email, location.',
+        'action': 'Please retry the operation with a valid body.'
+    },
 };
 
 module.exports = { ...PublicConstants };
