@@ -19,7 +19,7 @@ const PublicMethods = {
 
     getUserById: async (id) => {
         try {
-            return await User.model.findOne({ _id: id }, { _id: 0, __v: 0 });
+            return await User.model.findOne({ _id: id });
         } catch (error) {
             console.log(`Error occured while trying to get user by id from db: ${error}\n ${error.stack}`);
         }

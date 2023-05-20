@@ -37,12 +37,14 @@ const reducer = (state, action) => {
             return { ...toReturn, ...obj };
 
         case USER_OPERATION_BEGIN:
+        case USER_UPDATE_BEGIN:
             obj = {
                 isLoading: true
             };
             return { ...toReturn, ...obj };
 
         case USER_OPERATION_SUCCESS:
+        case USER_UPDATE_SUCCESS:
             obj = {
                 isLoading: false,
                 token: action.payload.token,
@@ -51,11 +53,12 @@ const reducer = (state, action) => {
                 jobLocation: action.payload.location,
                 showAlert: true,
                 alertType: 'success',
-                alertText: action.payload.alertText,
+                alertText: action.payload.alertText || 'User Profile Updated!',
             };
             return { ...toReturn, ...obj };
 
         case USER_OPERATION_ERROR:
+        case USER_UPDATE_ERROR:
             obj = {
                 isLoading: false,
                 showAlert: true,
@@ -78,34 +81,6 @@ const reducer = (state, action) => {
                 jobLocation: '',
             };
             return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
-
-        case USER_UPDATE_BEGIN:
-            obj = {
-                isLoading: true
-            };
-            return { ...toReturn, ...obj };
-
-        case USER_UPDATE_SUCCESS:
-            obj = {
-                isLoading: false,
-                token: action.payload.token,
-                user: action.payload.user,
-                userLocation: action.payload.location,
-                jobLocation: action.payload.location,
-                showAlert: true,
-                alertType: 'success',
-                alertText: 'User Profile Updated!',
-            };
-            return { ...toReturn, ...obj };
-
-        case USER_UPDATE_ERROR:
-            obj = {
-                isLoading: false,
-                showAlert: true,
-                alertType: 'danger',
-                alertText: action.payload.msg,
-            };
-            return { ...toReturn, ...obj };
 
         default:
             throw new Error(`[REDUCERS] action ${action.type} not found`);
