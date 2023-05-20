@@ -59,6 +59,7 @@ const AppProvider = ({ children }) => {
         console.log(error.response);
         if (error.response.status === 401) {
             console.log('AUTH ERROR!');
+            logoutUser();
         }
         return Promise.reject(error);
     });
@@ -140,10 +141,13 @@ const AppProvider = ({ children }) => {
             addUserToLocalStorage(payload);
         } catch (error) {
             console.log(`[APP-CONTEXT] Error while trying to update the user: ${error.response.data.message}`);
-            dispatch({
-                type: USER_UPDATE_ERROR,
-                payload: { msg: `${error.response.data.message}` }
-            });
+
+            if (error.response.status !== 401) {
+                dispatch({
+                    type: USER_UPDATE_ERROR,
+                    payload: { msg: `${error.response.data.message}` }
+                });
+            }
         } finally {
             hideAlert();
         }
