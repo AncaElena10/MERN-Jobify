@@ -18,6 +18,11 @@ import {
     USER_UPDATE_BEGIN,
     USER_UPDATE_SUCCESS,
     USER_UPDATE_ERROR,
+    HANDLE_CHANGE,
+    CLEAR_VALUES,
+    CREATE_JOB_BEGIN,
+    CREATE_JOB_SUCCESS,
+    CREATE_JOB_ERROR,
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -32,8 +37,18 @@ const initialState = {
     user: user ? JSON.parse(user) : null,
     token: token,
     userLocation: location || '',
-    joblocation: location || '',
     showSidebar: false,
+
+    // for jobs
+    jobLocation: location || '',
+    isEditing: false,
+    editJobId: '',
+    position: '',
+    company: '',
+    jobTypeOptions: ['full-time', 'part-time', 'remote', 'internship'],
+    jobType: 'full-time',
+    statusOptions: ['pending', 'interview', 'declined'],
+    status: 'pending',
 };
 
 const AppContext = React.createContext();
@@ -157,6 +172,37 @@ const AppProvider = ({ children }) => {
         dispatch({ type: TOGGLE_SIDEBAR });
     };
 
+    const handleChange = ({ name, value }) => {
+        dispatch({ type: HANDLE_CHANGE, payload: { name, value } });
+    }
+
+    const clearValues = () => {
+        dispatch({ type: CLEAR_VALUES });
+    }
+
+    const createJob = async (job) => {
+        dispatch({ type: CREATE_JOB_BEGIN });
+
+        try {
+            await authFetch.post(`/jobs`, job);
+
+            dispatch({ type: CREATE_JOB_SUCCESS });
+            dispatch({ type: CLEAR_VALUES });
+        } catch (error) {
+            console.log(`[APP-CONTEXT] Error while trying to create the job: ${error.response.data.message}`);
+
+            if (error.response.status === 401) {
+                return;
+            }
+            dispatch({
+                type: CREATE_JOB_ERROR,
+                payload: { msg: `${error.response.data.message}` }
+            });
+        } finally {
+            hideAlert();
+        }
+    }
+
     return (
         <AppContext.Provider value={
             {
@@ -166,6 +212,9 @@ const AppProvider = ({ children }) => {
                 toggleSidebar,
                 logoutUser,
                 updateUser,
+                handleChange,
+                clearValues,
+                createJob,
             }
         }>
             {children}
