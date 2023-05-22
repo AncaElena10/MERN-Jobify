@@ -50,6 +50,26 @@ const PrivateMethods = {
         }
 
         return response;
+    },
+    defaultJobsStatsResponse: (jobsStats) => {
+        const response = {
+            statistics: {
+                interview: 0,
+                pending: 0,
+                declined: 0
+            },
+            monthlyApplications: []
+        };
+
+        jobsStats.map((elem) => {
+            for (let key of Object.keys(response.statistics)) {
+                if (key === elem._id) {
+                    response.statistics[key] = elem.count;
+                }
+            }
+        })
+
+        return response;
     }
 };
 
@@ -156,7 +176,15 @@ const PublicMethods = {
     },
 
     getStats: async (req, res) => {
-        res.send('get jobs stats');
+        try {
+            const allJobs = await JobsService.getAllJobsGroupByStatus(req.user.userId);
+            const stats = PrivateMethods.defaultJobsStatsResponse(allJobs);
+
+            res.status(StatusCodes.OK).send(stats);
+        } catch (error) {
+            console.error(`An error occurred while trying to get all jobs: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
     },
 };
 

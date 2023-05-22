@@ -34,6 +34,7 @@ const reducer = (state, action) => {
         case JobsAction.CREATE_JOB_BEGIN:
         case JobsAction.DELETE_JOB_BEGIN:
         case JobsAction.EDIT_JOB_BEGIN:
+        case OtherActions.SHOW_STATS_BEGIN:
             obj = {
                 isLoading: true
             };
@@ -142,6 +143,14 @@ const reducer = (state, action) => {
                 showAlert: true,
                 alertType: 'success',
                 alertText: 'Job Updated!',
+            };
+            return { ...toReturn, ...obj };
+
+        case OtherActions.SHOW_STATS_SUCCESS:
+            obj = {
+                isLoading: false,
+                statistics: action.payload.statistics,
+                monthlyApplications: action.payload.monthlyApplications,
             };
             return { ...toReturn, ...obj };
 

@@ -5,6 +5,8 @@ const OtherActions = {
     HANDLE_CHANGE: 'HANDLE_CHANGE',
     CLEAR_VALUES: 'CLEAR_VALUES',
     SET_EDIT_JOB: 'SET_EDIT_JOB',
+    SHOW_STATS_BEGIN: 'SHOW_STATS_BEGIN',
+    SHOW_STATS_SUCCESS: 'SHOW_STATS_SUCCESS',
 };
 
 export default OtherActions;
