@@ -19,7 +19,8 @@ const AddJob = () => {
         statusOptions,
         handleChange,
         clearValues,
-        createJob
+        createJob,
+        editJob,
     } = useAppContext();
 
     const handleJobInput = (event) => {
@@ -38,6 +39,7 @@ const AddJob = () => {
         }
 
         if (isEditing) {
+            editJob();
             return;
         }
 
