@@ -1,7 +1,7 @@
 /* used to set global states (initial values) for the entire app */
 /* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 
 import reducer from './reducers';
@@ -43,6 +43,10 @@ const initialState = {
     totalJobs: 0,
     numOfPages: 1,
     page: 1,
+
+    // statistics
+    statistics: {},
+    monthlyApplications: []
 };
 
 const AppContext = React.createContext();
@@ -266,9 +270,35 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    const getStatistics = async () => {
+        dispatch({ type: OtherActions.SHOW_STATS_BEGIN });
+        try {
+            const response = await authFetch.get(`/jobs/stats`);
+            const payload = {
+                statistics: response.data.statistics,
+                monthlyApplications: response.data.monthlyApplications,
+            };
+
+            console.log(payload)
+
+            dispatch({
+                type: OtherActions.SHOW_STATS_SUCCESS,
+                payload: payload,
+            });
+        } catch (error) {
+            console.log(`Cannot retrieve the statistics.`);
+
+            // remember to de-comment this
+            // logoutUser(); 
+        } finally {
+            hideAlert();
+        }
+    }
+
     // setup on initial render - check / GET
+    // testing purpose
     // useEffect(() => {
-    //     getJobs()
+    //     getStatistics()
     // }, []);
 
     return (
@@ -287,6 +317,7 @@ const AppProvider = ({ children }) => {
                 setEditJob,
                 deleteJob,
                 editJob,
+                getStatistics,
             }
         }>
             {children}
