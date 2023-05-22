@@ -65,8 +65,16 @@ const AddJob = () => {
                     {/* job type  */}
                     <FormInputsSelect labelText='job type' value={jobType} handleChange={handleJobInput} list={jobTypeOptions} />
                     <div className='btn-container'>
-                        <button className='btn btn-block submit-btn' type='submit' onClick={onSubmit} disabled={isLoading}>submit</button>
-                        <button className='btn btn-block clear-btn' type='submit'
+                        <button
+                            className='btn btn-block submit-btn'
+                            type='submit'
+                            onClick={onSubmit}
+                            disabled={isLoading}>
+                            submit
+                        </button>
+                        <button
+                            className='btn btn-block clear-btn'
+                            type='submit'
                             onClick={(e) => {
                                 e.preventDefault()
                                 clearValues()

@@ -11,7 +11,10 @@ const Job = ({ _id, position, company, jobLocation, jobType, createdAt, status }
     let date = moment(createdAt);
     date = date.format('MMM Do, YYYY');
 
-    const { setEditJob, deleteJob } = useAppContext();
+    const {
+        setEditJob,
+        deleteJob
+    } = useAppContext();
 
     return (
         <Wrapper>

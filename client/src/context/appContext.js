@@ -1,35 +1,16 @@
 /* used to set global states (initial values) for the entire app */
 /* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 
 import reducer from './reducers';
 
 import { useReducer, useContext } from 'react';
 import {
-    DISPLAY_ALERT,
-    HIDE_ALERT,
-    USER_OPERATION_BEGIN,
-    USER_OPERATION_SUCCESS,
-    USER_OPERATION_ERROR,
-    TOGGLE_SIDEBAR,
-    LOGOUT_USER,
-    USER_UPDATE_BEGIN,
-    USER_UPDATE_SUCCESS,
-    USER_UPDATE_ERROR,
-    HANDLE_CHANGE,
-    CLEAR_VALUES,
-    CREATE_JOB_BEGIN,
-    CREATE_JOB_SUCCESS,
-    CREATE_JOB_ERROR,
-    GET_JOBS_BEGIN,
-    GET_JOBS_SUCCESS,
-    SET_EDIT_JOB,
-    DELETE_JOB_BEGIN,
-    EDIT_JOB_BEGIN,
-    EDIT_JOB_SUCCESS,
-    EDIT_JOB_ERROR,
+    OtherActions,
+    UserActions,
+    JobsAction
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -84,23 +65,22 @@ const AppProvider = ({ children }) => {
     authFetch.interceptors.response.use((response) => {
         return response;
     }, (error) => {
-        console.log(error.response);
         if (error.response.status === 401) {
-            console.log('AUTH ERROR!');
+            console.log('Auth error. Logging out...');
             logoutUser();
         }
         return Promise.reject(error);
     });
 
     const displayAlert = () => {
-        dispatch({ type: DISPLAY_ALERT });
+        dispatch({ type: OtherActions.DISPLAY_ALERT });
         hideAlert();
     };
 
     // hide the alert after some time
     const hideAlert = () => {
         setTimeout(() => {
-            dispatch({ type: HIDE_ALERT });
+            dispatch({ type: OtherActions.HIDE_ALERT });
         }, 3000);
     };
 
@@ -117,27 +97,27 @@ const AppProvider = ({ children }) => {
     };
 
     const setupUser = async ({ currentUser, endpoint, alertText }) => {
-        dispatch({ type: USER_OPERATION_BEGIN });
+        dispatch({ type: UserActions.USER_OPERATION_BEGIN });
 
         try {
             const response = await axios.post(`/api/v1/${endpoint}`, currentUser);
             const payload = {
                 user: JSON.parse(response.headers['user']),
                 token: response.headers['token'],
-                location: '', // TODO,
+                location: '',
                 alertText: alertText
             };
 
             dispatch({
-                type: USER_OPERATION_SUCCESS,
+                type: UserActions.USER_OPERATION_SUCCESS,
                 payload: payload
             });
 
             addUserToLocalStorage(payload);
         } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to login the user: ${error.response}`);
+            console.log(`Cannot setup the user.`);
             dispatch({
-                type: USER_OPERATION_ERROR,
+                type: UserActions.USER_OPERATION_ERROR,
                 payload: { msg: `${error.response.data.message}` }
             });
         } finally {
@@ -146,12 +126,12 @@ const AppProvider = ({ children }) => {
     };
 
     const logoutUser = () => {
-        dispatch({ type: LOGOUT_USER });
+        dispatch({ type: UserActions.LOGOUT_USER });
         removeUserFromLocalStorage();
-    }
+    };
 
     const updateUser = async (currentUser) => {
-        dispatch({ type: USER_UPDATE_BEGIN });
+        dispatch({ type: UserActions.USER_UPDATE_BEGIN });
 
         try {
             const response = await authFetch.patch(`updateUser`, currentUser);
@@ -162,62 +142,65 @@ const AppProvider = ({ children }) => {
             };
 
             dispatch({
-                type: USER_UPDATE_SUCCESS,
+                type: UserActions.USER_UPDATE_SUCCESS,
                 payload: payload
             });
 
             addUserToLocalStorage(payload);
         } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to update the user: ${error.response.data.message}`);
+            console.log(`Cannot update the user.`);
 
             if (error.response.status !== 401) {
                 dispatch({
-                    type: USER_UPDATE_ERROR,
+                    type: UserActions.USER_UPDATE_ERROR,
                     payload: { msg: `${error.response.data.message}` }
                 });
             }
         } finally {
             hideAlert();
         }
-    }
+    };
 
     const toggleSidebar = () => {
-        dispatch({ type: TOGGLE_SIDEBAR });
+        dispatch({ type: OtherActions.TOGGLE_SIDEBAR });
     };
 
     const handleChange = ({ name, value }) => {
-        dispatch({ type: HANDLE_CHANGE, payload: { name, value } });
-    }
+        dispatch({
+            type: OtherActions.HANDLE_CHANGE,
+            payload: { name, value }
+        });
+    };
 
     const clearValues = () => {
-        dispatch({ type: CLEAR_VALUES });
-    }
+        dispatch({ type: OtherActions.CLEAR_VALUES });
+    };
 
     const createJob = async (job) => {
-        dispatch({ type: CREATE_JOB_BEGIN });
+        dispatch({ type: JobsAction.CREATE_JOB_BEGIN });
 
         try {
             await authFetch.post(`/jobs`, job);
 
-            dispatch({ type: CREATE_JOB_SUCCESS });
-            dispatch({ type: CLEAR_VALUES });
+            dispatch({ type: JobsAction.CREATE_JOB_SUCCESS });
+            dispatch({ type: OtherActions.CLEAR_VALUES });
         } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to create the job: ${error.response.data.message}`);
+            console.log(`Cannot create the job.`);
 
             if (error.response.status === 401) {
                 return;
             }
             dispatch({
-                type: CREATE_JOB_ERROR,
+                type: JobsAction.CREATE_JOB_ERROR,
                 payload: { msg: `${error.response.data.message}` }
             });
         } finally {
             hideAlert();
         }
-    }
+    };
 
     const getJobs = async () => {
-        dispatch({ type: GET_JOBS_BEGIN });
+        dispatch({ type: JobsAction.GET_JOBS_BEGIN });
 
         try {
             const response = await authFetch.get(`/jobs`);
@@ -228,11 +211,11 @@ const AppProvider = ({ children }) => {
             };
 
             dispatch({
-                type: GET_JOBS_SUCCESS,
+                type: JobsAction.GET_JOBS_SUCCESS,
                 payload: payload,
             });
         } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to get all jobs.`);
+            console.log(`Cannot retrieve the jobs.`);
 
             // remember to de-comment this
             // logoutUser(); 
@@ -244,36 +227,36 @@ const AppProvider = ({ children }) => {
     // used to switch to 'add job' tab
     const setEditJob = (id) => {
         dispatch({
-            type: SET_EDIT_JOB,
+            type: OtherActions.SET_EDIT_JOB,
             payload: { id },
         });
     };
 
     const editJob = async (job) => {
-        dispatch({ type: EDIT_JOB_BEGIN });
+        dispatch({ type: JobsAction.EDIT_JOB_BEGIN });
 
         try {
             await authFetch.patch(`/jobs/${state.editJobId}`, job);
 
-            dispatch({ type: EDIT_JOB_SUCCESS });
-            dispatch({ type: CLEAR_VALUES });
+            dispatch({ type: JobsAction.EDIT_JOB_SUCCESS });
+            dispatch({ type: OtherActions.CLEAR_VALUES });
         } catch (error) {
-            console.log(`[APP-CONTEXT] Error while trying to create the job: ${error.response.data.message}`);
+            console.log(`Cannot edit the job.`);
 
             if (error.response.status === 401) {
                 return;
             }
             dispatch({
-                type: EDIT_JOB_ERROR,
+                type: JobsAction.EDIT_JOB_ERROR,
                 payload: { msg: `${error.response.data.message}` }
             });
         } finally {
             hideAlert();
         }
-    }
+    };
 
     const deleteJob = async (id) => {
-        dispatch({ type: DELETE_JOB_BEGIN });
+        dispatch({ type: JobsAction.DELETE_JOB_BEGIN });
         try {
             await authFetch.delete(`/jobs/${id}`);
             getJobs();
