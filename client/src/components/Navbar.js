@@ -8,7 +8,11 @@ import { useAppContext } from '../context/appContext';
 
 const Navbar = () => {
     const [showLogout, setShowLogout] = useState(false);
-    const { user, toggleSidebar, logoutUser } = useAppContext();
+    const {
+        user,
+        toggleSidebar,
+        logoutUser
+    } = useAppContext();
 
     return (
         <Wrapper>
@@ -21,13 +25,19 @@ const Navbar = () => {
                     <h3 className='logo-text'>Dashboard</h3>
                 </div>
                 <div className='btn-container'>
-                    <button className='btn' type='button' onClick={() => setShowLogout(!showLogout)}>
+                    <button
+                        className='btn'
+                        type='button'
+                        onClick={() => setShowLogout(!showLogout)}>
                         <AiOutlineUser />
                         {user?.name}
                         <AiOutlineCaretDown />
                     </button>
                     <div className={showLogout ? 'dropdown show-dropdown' : 'dropdown'}>
-                        <button className='dropdown-btn' type='button' onClick={logoutUser} >
+                        <button
+                            className='dropdown-btn'
+                            type='button'
+                            onClick={logoutUser} >
                             logout
                         </button>
                     </div>

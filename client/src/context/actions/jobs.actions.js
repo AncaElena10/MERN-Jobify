@@ -1,0 +1,20 @@
+const JobsAction = {
+    // job CREATE constants
+    CREATE_JOB_BEGIN: 'CREATE_JOB_BEGIN',
+    CREATE_JOB_SUCCESS: 'CREATE_JOB_SUCCESS',
+    CREATE_JOB_ERROR: 'CREATE_JOB_ERROR',
+
+    // jobs GET constants
+    GET_JOBS_BEGIN: 'GET_JOBS_BEGIN',
+    GET_JOBS_SUCCESS: 'GET_JOBS_SUCCESS',
+
+    // job DELETE constats
+    DELETE_JOB_BEGIN: 'DELETE_JOB_BEGIN',
+
+    // job EDIT constants
+    EDIT_JOB_BEGIN: 'EDIT_JOB_BEGIN',
+    EDIT_JOB_SUCCESS: 'EDIT_JOB_SUCCESS',
+    EDIT_JOB_ERROR: 'EDIT_JOB_ERROR',
+};
+
+export default JobsAction;

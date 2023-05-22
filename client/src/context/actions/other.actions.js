@@ -1,0 +1,10 @@
+const OtherActions = {
+    DISPLAY_ALERT: 'SHOW_ALERT',
+    HIDE_ALERT: 'HIDE_ALERT',
+    TOGGLE_SIDEBAR: 'TOGGLE_SIDEBAR',
+    HANDLE_CHANGE: 'HANDLE_CHANGE',
+    CLEAR_VALUES: 'CLEAR_VALUES',
+    SET_EDIT_JOB: 'SET_EDIT_JOB',
+};
+
+export default OtherActions;

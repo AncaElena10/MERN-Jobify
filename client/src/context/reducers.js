@@ -1,28 +1,9 @@
 /* used to populate the states with values received from appContext */
 
 import {
-    HIDE_ALERT,
-    DISPLAY_ALERT,
-    USER_OPERATION_BEGIN,
-    USER_OPERATION_SUCCESS,
-    USER_OPERATION_ERROR,
-    TOGGLE_SIDEBAR,
-    LOGOUT_USER,
-    USER_UPDATE_BEGIN,
-    USER_UPDATE_SUCCESS,
-    USER_UPDATE_ERROR,
-    HANDLE_CHANGE,
-    CLEAR_VALUES,
-    CREATE_JOB_BEGIN,
-    CREATE_JOB_SUCCESS,
-    CREATE_JOB_ERROR,
-    GET_JOBS_BEGIN,
-    GET_JOBS_SUCCESS,
-    SET_EDIT_JOB,
-    DELETE_JOB_BEGIN,
-    EDIT_JOB_BEGIN,
-    EDIT_JOB_SUCCESS,
-    EDIT_JOB_ERROR,
+    OtherActions,
+    UserActions,
+    JobsAction
 } from './actions';
 import { initialState } from './appContext';
 
@@ -32,7 +13,7 @@ const reducer = (state, action) => {
     };
     let obj;
     switch (action.type) {
-        case DISPLAY_ALERT:
+        case OtherActions.DISPLAY_ALERT:
             obj = {
                 showAlert: true, // global state
                 alertType: 'danger',  // global state
@@ -40,7 +21,7 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case HIDE_ALERT:
+        case OtherActions.HIDE_ALERT:
             obj = {
                 showAlert: false, // global state
                 alertType: '',  // global state
@@ -48,18 +29,18 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case USER_OPERATION_BEGIN:
-        case USER_UPDATE_BEGIN:
-        case CREATE_JOB_BEGIN:
-        case DELETE_JOB_BEGIN:
-        case EDIT_JOB_BEGIN:
+        case UserActions.USER_OPERATION_BEGIN:
+        case UserActions.USER_UPDATE_BEGIN:
+        case JobsAction.CREATE_JOB_BEGIN:
+        case JobsAction.DELETE_JOB_BEGIN:
+        case JobsAction.EDIT_JOB_BEGIN:
             obj = {
                 isLoading: true
             };
             return { ...toReturn, ...obj };
 
-        case USER_OPERATION_SUCCESS:
-        case USER_UPDATE_SUCCESS:
+        case UserActions.USER_OPERATION_SUCCESS:
+        case UserActions.USER_UPDATE_SUCCESS:
             obj = {
                 isLoading: false,
                 token: action.payload.token,
@@ -72,10 +53,10 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case USER_OPERATION_ERROR:
-        case USER_UPDATE_ERROR:
-        case CREATE_JOB_ERROR:
-        case EDIT_JOB_ERROR:
+        case UserActions.USER_OPERATION_ERROR:
+        case UserActions.USER_UPDATE_ERROR:
+        case JobsAction.CREATE_JOB_ERROR:
+        case JobsAction.EDIT_JOB_ERROR:
             obj = {
                 isLoading: false,
                 showAlert: true,
@@ -84,13 +65,13 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case TOGGLE_SIDEBAR:
+        case OtherActions.TOGGLE_SIDEBAR:
             obj = {
                 showSidebar: !state.showSidebar
             };
             return { ...toReturn, ...obj };
 
-        case LOGOUT_USER:
+        case UserActions.LOGOUT_USER:
             obj = {
                 token: null,
                 user: null,
@@ -99,13 +80,13 @@ const reducer = (state, action) => {
             };
             return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
 
-        case HANDLE_CHANGE:
+        case OtherActions.HANDLE_CHANGE:
             obj = {
                 [action.payload.name]: action.payload.value
             };
             return { ...toReturn, ...obj };
 
-        case CLEAR_VALUES:
+        case OtherActions.CLEAR_VALUES:
             obj = {
                 isEditing: false,
                 editJobId: '',
@@ -117,7 +98,7 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case CREATE_JOB_SUCCESS:
+        case JobsAction.CREATE_JOB_SUCCESS:
             obj = {
                 isLoading: false,
                 showAlert: true,
@@ -126,14 +107,14 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case GET_JOBS_BEGIN:
+        case JobsAction.GET_JOBS_BEGIN:
             obj = {
                 isLoading: true,
                 showAlert: false,
             };
             return { ...toReturn, ...obj };
 
-        case GET_JOBS_SUCCESS:
+        case JobsAction.GET_JOBS_SUCCESS:
             obj = {
                 isLoading: false,
                 jobs: action.payload.jobs,
@@ -142,7 +123,7 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case SET_EDIT_JOB:
+        case OtherActions.SET_EDIT_JOB:
             const job = state.jobs.find((job) => job._id === action.payload.id);
             obj = {
                 isEditing: true,
@@ -155,7 +136,7 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
-        case EDIT_JOB_SUCCESS:
+        case JobsAction.EDIT_JOB_SUCCESS:
             obj = {
                 isLoading: false,
                 showAlert: true,
