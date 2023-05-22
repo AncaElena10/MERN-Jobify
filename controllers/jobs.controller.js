@@ -2,8 +2,8 @@ const StatusCodes = require('http-status-codes').StatusCodes;
 const Joi = require('joi');
 
 const JobsService = require('../services/jobs.service');
-const UserService = require('../services/user.service');
 const ErrorMessages = require('../messages');
+const job = require('../models/job');
 
 const PrivateConstants = {
     RequiredPropertiesCreated: ['company', 'position'],
@@ -26,20 +26,40 @@ const PrivateConstants = {
 };
 
 const PrivateMethods = {
-    defaultJob: (userBody) => {
-        return {
-            company: userBody.company,
-            position: userBody.position,
-            status: userBody.status,
-            jobType: userBody.jobType,
-            jobLocation: userBody.jobLocation
+    defaultJobsResponse: (jobs) => {
+        const response = {
+            result: [],
+            total: jobs.length,
+            numOfPages: 1,
+        };
+
+        for (let index = 0; index < jobs.length; index++) {
+            const job = jobs[index];
+            const obj = {
+                company: job.company,
+                position: job.position,
+                status: job.status,
+                jobType: job.jobType,
+                jobLocation: job.jobLocation
+            }
+            response.result.push(obj);
         }
+
+        return response;
     }
 };
 
 const PublicMethods = {
     getAll: async (req, res) => {
-        res.send('get all jobs');
+        try {
+            const allJobs = await JobsService.getAllJobs(req.user.userId);
+            const result = PrivateMethods.defaultJobsResponse(allJobs);
+
+            res.status(StatusCodes.OK).send(result);
+        } catch (error) {
+            console.error(`An error occurred while trying to get all jobs: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
     },
 
     create: async (req, res) => {
@@ -65,10 +85,7 @@ const PublicMethods = {
 
             reqBody.createdBy = req.user.userId;
 
-            const jobSavedToDb = await JobsService.insertJob(reqBody);
-            const jobBodyHeader = PrivateMethods.defaultJob(jobSavedToDb);
-
-            res.setHeader('job', JSON.stringify(jobBodyHeader));
+            await JobsService.insertJob(reqBody);
 
             res.status(StatusCodes.CREATED).send(ErrorMessages.CREATED_MESSAGES.E2010001);
         } catch (error) {
