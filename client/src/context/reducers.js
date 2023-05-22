@@ -11,6 +11,11 @@ import {
     USER_UPDATE_BEGIN,
     USER_UPDATE_SUCCESS,
     USER_UPDATE_ERROR,
+    HANDLE_CHANGE,
+    CLEAR_VALUES,
+    CREATE_JOB_BEGIN,
+    CREATE_JOB_SUCCESS,
+    CREATE_JOB_ERROR,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -38,6 +43,7 @@ const reducer = (state, action) => {
 
         case USER_OPERATION_BEGIN:
         case USER_UPDATE_BEGIN:
+        case CREATE_JOB_BEGIN:
             obj = {
                 isLoading: true
             };
@@ -59,6 +65,7 @@ const reducer = (state, action) => {
 
         case USER_OPERATION_ERROR:
         case USER_UPDATE_ERROR:
+        case CREATE_JOB_ERROR:
             obj = {
                 isLoading: false,
                 showAlert: true,
@@ -81,6 +88,33 @@ const reducer = (state, action) => {
                 jobLocation: '',
             };
             return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
+
+        case HANDLE_CHANGE:
+            obj = {
+                [action.payload.name]: action.payload.value
+            };
+            return { ...toReturn, ...obj };
+
+        case CLEAR_VALUES:
+            obj = {
+                isEditing: false,
+                editJobId: '',
+                position: '',
+                company: '',
+                jobType: 'full-time',
+                status: 'pending',
+                jobLocation: state.userLocation,
+            };
+            return { ...toReturn, ...obj };
+
+        case CREATE_JOB_SUCCESS:
+            obj = {
+                isLoading: false,
+                showAlert: true,
+                alertType: 'success',
+                alertText: 'New Job Created!',
+            };
+            return { ...toReturn, ...obj };
 
         default:
             throw new Error(`[REDUCERS] action ${action.type} not found`);
