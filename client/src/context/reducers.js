@@ -19,6 +19,10 @@ import {
     GET_JOBS_BEGIN,
     GET_JOBS_SUCCESS,
     SET_EDIT_JOB,
+    DELETE_JOB_BEGIN,
+    EDIT_JOB_BEGIN,
+    EDIT_JOB_SUCCESS,
+    EDIT_JOB_ERROR,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -47,6 +51,8 @@ const reducer = (state, action) => {
         case USER_OPERATION_BEGIN:
         case USER_UPDATE_BEGIN:
         case CREATE_JOB_BEGIN:
+        case DELETE_JOB_BEGIN:
+        case EDIT_JOB_BEGIN:
             obj = {
                 isLoading: true
             };
@@ -69,6 +75,7 @@ const reducer = (state, action) => {
         case USER_OPERATION_ERROR:
         case USER_UPDATE_ERROR:
         case CREATE_JOB_ERROR:
+        case EDIT_JOB_ERROR:
             obj = {
                 isLoading: false,
                 showAlert: true,
@@ -145,6 +152,15 @@ const reducer = (state, action) => {
                 jobLocation: job.jobLocation,
                 jobType: job.jobType,
                 status: job.status,
+            };
+            return { ...toReturn, ...obj };
+
+        case EDIT_JOB_SUCCESS:
+            obj = {
+                isLoading: false,
+                showAlert: true,
+                alertType: 'success',
+                alertText: 'Job Updated!',
             };
             return { ...toReturn, ...obj };
 
