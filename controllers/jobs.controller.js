@@ -36,11 +36,15 @@ const PrivateMethods = {
         for (let index = 0; index < jobs.length; index++) {
             const job = jobs[index];
             const obj = {
+                _id: job._id,
                 company: job.company,
                 position: job.position,
                 status: job.status,
                 jobType: job.jobType,
-                jobLocation: job.jobLocation
+                jobLocation: job.jobLocation,
+                createdBy: job.createdBy,
+                createdAt: job.createdAt,
+                updatedAt: job.updatedAt,
             }
             response.result.push(obj);
         }

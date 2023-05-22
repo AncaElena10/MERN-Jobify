@@ -16,6 +16,9 @@ import {
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
     CREATE_JOB_ERROR,
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
+    SET_EDIT_JOB,
 } from './actions';
 import { initialState } from './appContext';
 
@@ -113,6 +116,35 @@ const reducer = (state, action) => {
                 showAlert: true,
                 alertType: 'success',
                 alertText: 'New Job Created!',
+            };
+            return { ...toReturn, ...obj };
+
+        case GET_JOBS_BEGIN:
+            obj = {
+                isLoading: true,
+                showAlert: false,
+            };
+            return { ...toReturn, ...obj };
+
+        case GET_JOBS_SUCCESS:
+            obj = {
+                isLoading: false,
+                jobs: action.payload.jobs,
+                totalJobs: action.payload.totalJobs,
+                numOfPages: action.payload.numOfPages,
+            };
+            return { ...toReturn, ...obj };
+
+        case SET_EDIT_JOB:
+            const job = state.jobs.find((job) => job._id === action.payload.id);
+            obj = {
+                isEditing: true,
+                editJobId: job._id,
+                position: job.position,
+                company: job.company,
+                jobLocation: job.jobLocation,
+                jobType: job.jobType,
+                status: job.status,
             };
             return { ...toReturn, ...obj };
 

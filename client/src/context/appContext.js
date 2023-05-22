@@ -1,7 +1,7 @@
 /* used to set global states (initial values) for the entire app */
 /* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 
 import reducer from './reducers';
@@ -23,6 +23,9 @@ import {
     CREATE_JOB_BEGIN,
     CREATE_JOB_SUCCESS,
     CREATE_JOB_ERROR,
+    GET_JOBS_BEGIN,
+    GET_JOBS_SUCCESS,
+    SET_EDIT_JOB,
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -49,6 +52,12 @@ const initialState = {
     jobType: 'full-time',
     statusOptions: ['pending', 'interview', 'declined'],
     status: 'pending',
+
+    //
+    jobs: [],
+    totalJobs: 0,
+    numOfPages: 1,
+    page: 1,
 };
 
 const AppContext = React.createContext();
@@ -203,6 +212,51 @@ const AppProvider = ({ children }) => {
         }
     }
 
+    const getJobs = async () => {
+        dispatch({ type: GET_JOBS_BEGIN });
+
+        try {
+            const response = await authFetch.get(`/jobs`);
+            const payload = {
+                jobs: response.data.result,
+                totalJobs: response.data.total,
+                numOfPages: response.data.numOfPages
+            };
+
+            dispatch({
+                type: GET_JOBS_SUCCESS,
+                payload: payload,
+            });
+        } catch (error) {
+            console.log(`[APP-CONTEXT] Error while trying to get all jobs.`);
+
+            // remember to de-comment this
+            // logoutUser(); 
+        } finally {
+            hideAlert();
+        }
+    };
+
+    const setEditJob = (id) => {
+        dispatch({
+            type: SET_EDIT_JOB,
+            payload: { id },
+        });
+    };
+
+    const editJob = () => {
+        console.log('edit job');
+    }
+
+    const deleteJob = (id) => {
+        console.log('delete job: ' + JSON.stringify(id));
+    };
+
+    // setup on initial render - check / GET
+    // useEffect(() => {
+    //     getJobs()
+    // }, []);
+
     return (
         <AppContext.Provider value={
             {
@@ -215,6 +269,10 @@ const AppProvider = ({ children }) => {
                 handleChange,
                 clearValues,
                 createJob,
+                getJobs,
+                setEditJob,
+                deleteJob,
+                editJob,
             }
         }>
             {children}
