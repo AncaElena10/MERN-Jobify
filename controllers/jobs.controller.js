@@ -3,7 +3,7 @@ const Joi = require('joi');
 
 const JobsService = require('../services/jobs.service');
 const ErrorMessages = require('../messages');
-const job = require('../models/job');
+const hasAccess = require('../utils/checkPermissions').checkPermissions;
 
 const PrivateConstants = {
     RequiredPropertiesCreated: ['company', 'position'],
@@ -98,16 +98,65 @@ const PublicMethods = {
         }
     },
 
-    getStats: async (req, res) => {
-        res.send('get jobs stats');
+    update: async (req, res) => {
+        try {
+            const jobId = req.params.id;
+            const job = await JobsService.getJobById(jobId);
+
+            if (!job || !hasAccess(req.user, job.createdBy)) {
+                console.debug(`Couldn't find the job with id ${jobId}`);
+                return res.status(StatusCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND_MESSAGES.E4040002);
+            }
+
+            const reqBody = req.body;
+            const validationResult = PrivateConstants.JobSchemaValidator.validate(reqBody);
+
+            // missing/invalid properties
+            if ((validationResult.error && validationResult.error.details)) {
+                if (validationResult.error.details[0].path.includes('status')) {
+                    console.debug(`Invalid value for status.`);
+                    return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000006);
+                }
+
+                if (validationResult.error.details[0].path.includes('jobType')) {
+                    console.debug(`Invalid value for jobType.`);
+                    return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000007);
+                }
+
+                console.debug(`The following properties must be provided: ${JSON.stringify(PrivateConstants.RequiredPropertiesCreated)}`);
+                return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000005);
+            }
+
+            await JobsService.updateJob(reqBody, jobId);
+
+            res.status(StatusCodes.CREATED).send(ErrorMessages.CREATED_MESSAGES.E2010001);
+        } catch (error) {
+            console.error(`An error occurred while trying to update the job: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
     },
 
     delete: async (req, res) => {
-        res.send('delete job');
+        try {
+            const jobId = req.params.id;
+            const job = await JobsService.getJobById(jobId);
+
+            if (!job || !hasAccess(req.user, job.createdBy)) {
+                console.debug(`Couldn't find the job with id ${jobId}`);
+                return res.status(StatusCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND_MESSAGES.E4040002);
+            }
+
+            await JobsService.deleteJob(jobId);
+
+            res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
+        } catch (error) {
+            console.error(`An error occurred while trying to update the job: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
     },
 
-    update: async (req, res) => {
-        res.send('update job');
+    getStats: async (req, res) => {
+        res.send('get jobs stats');
     },
 };
 

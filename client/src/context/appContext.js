@@ -26,6 +26,10 @@ import {
     GET_JOBS_BEGIN,
     GET_JOBS_SUCCESS,
     SET_EDIT_JOB,
+    DELETE_JOB_BEGIN,
+    EDIT_JOB_BEGIN,
+    EDIT_JOB_SUCCESS,
+    EDIT_JOB_ERROR,
 } from './actions';
 
 const user = localStorage.getItem('user');
@@ -237,6 +241,7 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // used to switch to 'add job' tab
     const setEditJob = (id) => {
         dispatch({
             type: SET_EDIT_JOB,
@@ -244,12 +249,38 @@ const AppProvider = ({ children }) => {
         });
     };
 
-    const editJob = () => {
-        console.log('edit job');
+    const editJob = async (job) => {
+        dispatch({ type: EDIT_JOB_BEGIN });
+
+        try {
+            await authFetch.patch(`/jobs/${state.editJobId}`, job);
+
+            dispatch({ type: EDIT_JOB_SUCCESS });
+            dispatch({ type: CLEAR_VALUES });
+        } catch (error) {
+            console.log(`[APP-CONTEXT] Error while trying to create the job: ${error.response.data.message}`);
+
+            if (error.response.status === 401) {
+                return;
+            }
+            dispatch({
+                type: EDIT_JOB_ERROR,
+                payload: { msg: `${error.response.data.message}` }
+            });
+        } finally {
+            hideAlert();
+        }
     }
 
-    const deleteJob = (id) => {
-        console.log('delete job: ' + JSON.stringify(id));
+    const deleteJob = async (id) => {
+        dispatch({ type: DELETE_JOB_BEGIN });
+        try {
+            await authFetch.delete(`/jobs/${id}`);
+            getJobs();
+        } catch (error) {
+            // remember to de-comment this
+            // logoutUser(); 
+        }
     };
 
     // setup on initial render - check / GET

@@ -38,12 +38,13 @@ const AddJob = () => {
             return;
         }
 
+        const job = { position, company, jobLocation, jobType, status };
+
         if (isEditing) {
-            editJob();
+            editJob(job);
             return;
         }
 
-        const job = { position, company, jobLocation, jobType, status };
         createJob(job);
     }
 

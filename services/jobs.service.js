@@ -25,6 +25,14 @@ const PublicMethods = {
         }
     },
 
+    deleteJob: async (id) => {
+        try {
+            return await Job.model.deleteOne({ _id: id });
+        } catch (error) {
+            console.log(`Error occured while trying to delete the job: ${error}\n ${error.stack}`);
+        }
+    },
+
     updateJob: async (body, id) => {
         try {
             return await Job.model.updateOne({ _id: id }, { $set: body });
