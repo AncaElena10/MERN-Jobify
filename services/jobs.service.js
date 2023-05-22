@@ -32,6 +32,14 @@ const PublicMethods = {
             console.log(`Error occured while trying to update the job: ${error}\n ${error.stack}`);
         }
     },
+
+    getAllJobs: async (id) => {
+        try {
+            return await Job.model.find({ createdBy: id });
+        } catch (error) {
+            console.log(`Error occured while trying to get all jobs from db: ${error}\n ${error.stack}`);
+        }
+    }
 }
 
 module.exports = { ...PublicMethods };

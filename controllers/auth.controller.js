@@ -63,7 +63,7 @@ const PublicMethods = {
     register: async (req, res) => {
         try {
             /* empty db << for testing purposes only >> */
-            await UserService.deleteAllUsers();
+            // await UserService.deleteAllUsers();
 
             const reqBody = req.body;
             const validationResult = PrivateConstants.RegisterSchemaValidator.validate(reqBody);
