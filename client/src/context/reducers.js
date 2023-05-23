@@ -154,6 +154,15 @@ const reducer = (state, action) => {
             };
             return { ...toReturn, ...obj };
 
+        case OtherActions.CLEAR_FILTERS:
+            obj = {
+                search: '',
+                filterByStatus: 'all',
+                filterByJobType: 'all',
+                sort: 'latest',
+            };
+            return { ...toReturn, ...obj };
+
         default:
             throw new Error(`[REDUCERS] action ${action.type} not found`);
     }

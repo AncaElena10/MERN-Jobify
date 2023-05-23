@@ -42,9 +42,9 @@ const PublicMethods = {
         }
     },
 
-    getAllJobs: async (userId) => {
+    getAllJobs: async (query, sortValue) => {
         try {
-            return await Job.model.find({ createdBy: new mongoose.Types.ObjectId(userId) });
+            return await Job.model.find(query).sort(sortValue);
         } catch (error) {
             console.log(`Error occured while trying to get all jobs from db: ${error}\n ${error.stack}`);
         }

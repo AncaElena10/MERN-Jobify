@@ -4,7 +4,7 @@ const moment = require('moment');
 
 const JobsService = require('../services/jobs.service');
 const ErrorMessages = require('../messages');
-const hasAccess = require('../utils/checkPermissions').checkPermissions;
+const utils = require('../utils/utils');
 
 const PrivateConstants = {
     RequiredPropertiesCreated: ['company', 'position'],
@@ -88,7 +88,11 @@ const PrivateMethods = {
 const PublicMethods = {
     getAll: async (req, res) => {
         try {
-            const allJobs = await JobsService.getAllJobs(req.user.userId);
+            const userId = req.user.userId;
+            const queryParams = utils.convertQueryParamsToLowerCase(req.query);
+            const { status, jobtype, sort, search } = queryParams;
+            const filteringAndSortingQuery = utils.createFilteringAndSortingQuery(status, jobtype, sort, search, userId);
+            const allJobs = await JobsService.getAllJobs(filteringAndSortingQuery.filter, filteringAndSortingQuery.sort);
             const result = PrivateMethods.defaultJobsResponse(allJobs);
 
             res.status(StatusCodes.OK).send(result);
@@ -135,7 +139,7 @@ const PublicMethods = {
             const jobId = req.params.id;
             const job = await JobsService.getJobById(jobId);
 
-            if (!job || !hasAccess(req.user, job.createdBy)) {
+            if (!job || !utils.checkPermissions(req.user, job.createdBy)) {
                 console.debug(`Couldn't find the job with id ${jobId}`);
                 return res.status(StatusCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND_MESSAGES.E4040002);
             }

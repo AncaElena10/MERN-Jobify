@@ -46,7 +46,15 @@ const initialState = {
 
     // statistics
     statistics: {},
-    monthlyApplications: []
+    monthlyApplications: [],
+
+    // filtering&sorting
+    // the default values for jobType and status are above (jobTypeOptions, statusOptions)
+    search: '', // default value for search
+    filterByStatus: 'all', // used for filter by status
+    filterByJobType: 'all', // used for filter by jobType
+    sort: 'latest', // default value for sort
+    sortOptions: ['latest', 'oldest', 'a-z', 'z-a'], // used for sorting
 };
 
 const AppContext = React.createContext();
@@ -204,10 +212,17 @@ const AppProvider = ({ children }) => {
     };
 
     const getJobs = async () => {
+        const { search, filterByJobType, filterByStatus, sort } = state;
+        let url = `/jobs?status=${filterByStatus}&jobType=${filterByJobType}&sort=${sort}`;
+
+        if (search) {
+            url = `${url}&search=${search}`;
+        }
+
         dispatch({ type: JobsAction.GET_JOBS_BEGIN });
 
         try {
-            const response = await authFetch.get(`/jobs`);
+            const response = await authFetch.get(url);
             const payload = {
                 jobs: response.data.result,
                 totalJobs: response.data.total,
@@ -291,6 +306,10 @@ const AppProvider = ({ children }) => {
         } finally {
             hideAlert();
         }
+    };
+
+    const clearFilters = () => {
+        dispatch({ type: OtherActions.CLEAR_FILTERS });
     }
 
     // setup on initial render - check / GET
@@ -316,6 +335,7 @@ const AppProvider = ({ children }) => {
                 deleteJob,
                 editJob,
                 getStatistics,
+                clearFilters,
             }
         }>
             {children}
