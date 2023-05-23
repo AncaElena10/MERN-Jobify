@@ -12,12 +12,16 @@ const JobsContainer = () => {
         jobs,
         isLoading,
         page,
-        totalJobs
+        totalJobs,
+        search,
+        filterByStatus,
+        filterByJobType,
+        sort,
     } = useAppContext();
 
     useEffect(() => {
-        getJobs()
-    }, []);
+        getJobs();
+    }, [search, filterByJobType, filterByStatus, sort]); // call get jobs everytime one of these values changes
 
     if (isLoading) {
         return <Loading center />
