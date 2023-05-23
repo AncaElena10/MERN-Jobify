@@ -1,5 +1,6 @@
 const StatusCodes = require('http-status-codes').StatusCodes;
 const Joi = require('joi');
+const moment = require('moment');
 
 const JobsService = require('../services/jobs.service');
 const ErrorMessages = require('../messages');
@@ -51,7 +52,8 @@ const PrivateMethods = {
 
         return response;
     },
-    defaultJobsStatsResponse: (jobsStats) => {
+
+    defaultJobsStatsResponse: (jobsStatsStatus, jobsStatsMonthly) => {
         const response = {
             statistics: {
                 interview: 0,
@@ -61,16 +63,26 @@ const PrivateMethods = {
             monthlyApplications: []
         };
 
-        jobsStats.map((elem) => {
+        jobsStatsStatus.map((elem) => {
             for (let key of Object.keys(response.statistics)) {
                 if (key === elem._id) {
                     response.statistics[key] = elem.count;
                 }
             }
-        })
+        });
+
+        response.monthlyApplications = jobsStatsMonthly.map((elem) => {
+            const {
+                _id: { year, month },
+                count,
+            } = elem;
+
+            const date = moment().month(month - 1).year(year).format('MMM Y')
+            return { date, count };
+        }).reverse();
 
         return response;
-    }
+    },
 };
 
 const PublicMethods = {
@@ -177,12 +189,13 @@ const PublicMethods = {
 
     getStats: async (req, res) => {
         try {
-            const allJobs = await JobsService.getAllJobsGroupByStatus(req.user.userId);
-            const stats = PrivateMethods.defaultJobsStatsResponse(allJobs);
+            const allJobsGroupedByStatus = await JobsService.getAllJobsGroupByStatus(req.user.userId);
+            const alljobsGroupedByMonth = await JobsService.getAllJobsGroupByMonth(req.user.userId);
+            const stats = PrivateMethods.defaultJobsStatsResponse(allJobsGroupedByStatus, alljobsGroupedByMonth);
 
             res.status(StatusCodes.OK).send(stats);
         } catch (error) {
-            console.error(`An error occurred while trying to get all jobs: ${error}\n${error.stack}`);
+            console.error(`An error occurred while trying to get jobs stats: ${error}\n${error.stack}`);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
         }
     },
