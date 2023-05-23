@@ -279,8 +279,6 @@ const AppProvider = ({ children }) => {
                 monthlyApplications: response.data.monthlyApplications,
             };
 
-            console.log(payload)
-
             dispatch({
                 type: OtherActions.SHOW_STATS_SUCCESS,
                 payload: payload,

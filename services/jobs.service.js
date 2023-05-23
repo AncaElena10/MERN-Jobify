@@ -57,7 +57,28 @@ const PublicMethods = {
                 { $group: { _id: '$status', count: { $sum: 1 } } }
             ]);
         } catch (error) {
-            console.log(`Error occured while trying to get all jobs from db that match the filter: ${error}\n ${error.stack}`);
+            console.log(`Error occured while trying to get all jobs from db that match the status filter: ${error}\n ${error.stack}`);
+        }
+    },
+
+    getAllJobsGroupByMonth: async (userId) => {
+        try {
+            return await Job.model.aggregate([
+                { $match: { createdBy: new mongoose.Types.ObjectId(userId) } },
+                {
+                    $group: {
+                        _id: {
+                            year: { $year: "$createdAt" },
+                            month: { $month: "$createdAt" },
+                        },
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { "_id.year": -1, "_id.month": -1 } },
+                { $limit: 6 },
+            ]);
+        } catch (error) {
+            console.log(`Error occured while trying to get all jobs from db that match the monthly filter: ${error}\n ${error.stack}`);
         }
     },
 }
