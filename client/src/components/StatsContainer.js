@@ -31,7 +31,7 @@ const StatsContainer = () => {
             color: '#d66a6a',
             bcg: '#ffeeee',
         },
-    ]
+    ];
 
     return (
         <Wrapper>

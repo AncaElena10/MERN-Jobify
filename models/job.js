@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
 
 const PrivateConstans = {
     JobSchema: new mongoose.Schema({

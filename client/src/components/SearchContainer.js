@@ -50,8 +50,7 @@ const SearchContainer = () => {
                     <button
                         className='btn btn-block btn-danger'
                         disabled={isLoading}
-                        onClick={onSubmit}
-                    >
+                        onClick={onSubmit}>
                         clear filters
                     </button>
                 </div>

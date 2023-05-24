@@ -5,7 +5,7 @@ const AllJobs = () => {
     return <>
         <SearchContainer />
         <JobsContainer />
-    </>
+    </>;
 }
 
 export default AllJobs;
