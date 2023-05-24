@@ -42,9 +42,9 @@ const PublicMethods = {
         }
     },
 
-    getAllJobs: async (query, sortValue) => {
+    getAllJobs: async (query, sortValue, skipValue, limitValue) => {
         try {
-            return await Job.model.find(query).sort(sortValue);
+            return await Job.model.find(query).sort(sortValue).skip(skipValue).limit(limitValue);
         } catch (error) {
             console.log(`Error occured while trying to get all jobs from db: ${error}\n ${error.stack}`);
         }
@@ -81,6 +81,14 @@ const PublicMethods = {
             console.log(`Error occured while trying to get all jobs from db that match the monthly filter: ${error}\n ${error.stack}`);
         }
     },
+
+    totalNumberOfJobs: async (query) => {
+        try {
+            return await Job.model.countDocuments(query);
+        } catch (error) {
+            console.log(`Error occured while trying to get all jobs from db: ${error}\n ${error.stack}`);
+        }
+    }
 }
 
 module.exports = { ...PublicMethods };
