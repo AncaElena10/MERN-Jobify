@@ -14,12 +14,17 @@ const PublicMethods = {
         return queryParamsLowerCase;
     },
 
-    createFilteringAndSortingQuery: (status, jobType, sort, search, userId) => {
+    createFilteringSortingPaginationQuery: (status, jobType, sort, search, limit, page, userId) => {
         const queryObject = {
             filter: {
                 createdBy: new mongoose.Types.ObjectId(userId),
             },
             sort: '',
+            pagination: {
+                limit: 0,
+                page: 1,
+                skip: 0,
+            }
         };
 
         // in case status is 'all', do not send it
@@ -57,8 +62,13 @@ const PublicMethods = {
             }
         }
 
+        // pagination
+        queryObject.pagination.limit = (limit && typeof parseInt(limit) === 'number') ? Number(limit) : 0;
+        queryObject.pagination.page = (page && typeof parseInt(page) === 'number') ? Number(page) : 1;
+        queryObject.pagination.skip = (queryObject.pagination.page - 1) * queryObject.pagination.limit;
+
         return queryObject;
-    }
+    },
 };
 
 module.exports = { ...PublicMethods };

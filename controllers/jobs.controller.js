@@ -27,11 +27,11 @@ const PrivateConstants = {
 };
 
 const PrivateMethods = {
-    defaultJobsResponse: (jobs) => {
+    defaultJobsResponse: (jobs, total, limit) => {
         const response = {
             result: [],
-            total: jobs.length,
-            numOfPages: 1,
+            total: total,
+            numOfPages: (!limit || limit <= 0) ? 0 : Math.ceil(total / limit),
         };
 
         for (let index = 0; index < jobs.length; index++) {
@@ -90,10 +90,35 @@ const PublicMethods = {
         try {
             const userId = req.user.userId;
             const queryParams = utils.convertQueryParamsToLowerCase(req.query);
-            const { status, jobtype, sort, search } = queryParams;
-            const filteringAndSortingQuery = utils.createFilteringAndSortingQuery(status, jobtype, sort, search, userId);
-            const allJobs = await JobsService.getAllJobs(filteringAndSortingQuery.filter, filteringAndSortingQuery.sort);
-            const result = PrivateMethods.defaultJobsResponse(allJobs);
+            const {
+                status,
+                jobtype,
+                sort,
+                search,
+                limit,
+                page
+            } = queryParams;
+            const filteringSortingPaginationQuery = utils.createFilteringSortingPaginationQuery(
+                status,
+                jobtype,
+                sort,
+                search,
+                limit,
+                page,
+                userId
+            );
+            const allJobs = await JobsService.getAllJobs(
+                filteringSortingPaginationQuery.filter,
+                filteringSortingPaginationQuery.sort,
+                filteringSortingPaginationQuery.pagination.skip,
+                filteringSortingPaginationQuery.pagination.limit
+            );
+            const totalNumberOfJobs = await JobsService.totalNumberOfJobs(filteringSortingPaginationQuery.filter);
+            const result = PrivateMethods.defaultJobsResponse(
+                allJobs,
+                totalNumberOfJobs,
+                filteringSortingPaginationQuery.pagination.limit
+            );
 
             res.status(StatusCodes.OK).send(result);
         } catch (error) {

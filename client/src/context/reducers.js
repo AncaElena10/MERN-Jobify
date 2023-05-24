@@ -83,7 +83,8 @@ const reducer = (state, action) => {
 
         case OtherActions.HANDLE_CHANGE:
             obj = {
-                [action.payload.name]: action.payload.value
+                [action.payload.name]: action.payload.value,
+                page: 1, // always reset to the first page in case of filtering etc..
             };
             return { ...toReturn, ...obj };
 
@@ -160,6 +161,12 @@ const reducer = (state, action) => {
                 filterByStatus: 'all',
                 filterByJobType: 'all',
                 sort: 'latest',
+            };
+            return { ...toReturn, ...obj };
+
+        case OtherActions.CHANGE_PAGE:
+            obj = {
+                page: action.payload.page,
             };
             return { ...toReturn, ...obj };
 

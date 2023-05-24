@@ -5,6 +5,7 @@ import { useAppContext } from '../context/appContext';
 import Loading from './Loading';
 import Job from './Job';
 import Wrapper from '../assets/wrappers/JobsContainer';
+import PaginationContainer from './PaginationContainer';
 
 const JobsContainer = () => {
     const {
@@ -17,11 +18,12 @@ const JobsContainer = () => {
         filterByStatus,
         filterByJobType,
         sort,
+        numOfPages
     } = useAppContext();
 
     useEffect(() => {
         getJobs();
-    }, [search, filterByJobType, filterByStatus, sort]); // call get jobs everytime one of these values changes
+    }, [page, search, filterByJobType, filterByStatus, sort]); // call get jobs everytime one of these values changes
 
     if (isLoading) {
         return <Loading center />
@@ -42,6 +44,8 @@ const JobsContainer = () => {
                     return <Job key={job._id} {...job} />
                 })}
             </div>
+            {numOfPages > 1 && <PaginationContainer />}
+
         </Wrapper>
     );
 };

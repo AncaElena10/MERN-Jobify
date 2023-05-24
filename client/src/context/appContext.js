@@ -212,8 +212,10 @@ const AppProvider = ({ children }) => {
     };
 
     const getJobs = async () => {
-        const { search, filterByJobType, filterByStatus, sort } = state;
-        let url = `/jobs?status=${filterByStatus}&jobType=${filterByJobType}&sort=${sort}`;
+        const { page, search, filterByJobType, filterByStatus, sort } = state;
+        const limitDefaultValue = 10;
+        
+        let url = `/jobs?limit=${limitDefaultValue}&page=${page}&status=${filterByStatus}&jobType=${filterByJobType}&sort=${sort}`;
 
         if (search) {
             url = `${url}&search=${search}`;
@@ -310,7 +312,14 @@ const AppProvider = ({ children }) => {
 
     const clearFilters = () => {
         dispatch({ type: OtherActions.CLEAR_FILTERS });
-    }
+    };
+
+    const changePage = (page) => {
+        dispatch({
+            type: OtherActions.CHANGE_PAGE,
+            payload: { page }
+        });
+    };
 
     // setup on initial render - check / GET
     // testing purpose
@@ -336,6 +345,7 @@ const AppProvider = ({ children }) => {
                 editJob,
                 getStatistics,
                 clearFilters,
+                changePage,
             }
         }>
             {children}
