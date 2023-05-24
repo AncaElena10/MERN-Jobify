@@ -1,4 +1,11 @@
 const router = require('express').Router();
+const rateLimiter = require('express-rate-limit');
+
+const apiLimiter = rateLimiter.rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,
+    message: 'Too many requests from this IP Address, please try again after 15 minutes.',
+})
 
 const AppConstants = require('../../config/constants');
 const authController = require('../../controllers/auth.controller');
@@ -8,8 +15,8 @@ const authMiddleware = require('../../middleware/app.middleware');
 
 // user
 // public APIs - do not require the token
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', apiLimiter, authController.register);
+router.post('/login', apiLimiter, authController.login);
 // private APIs - require the token
 router.patch('/updateUser', authMiddleware.auth, authController.update);
 router.get('/user', authMiddleware.auth, authController.getOne);
