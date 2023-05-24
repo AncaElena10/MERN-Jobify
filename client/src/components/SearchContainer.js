@@ -1,10 +1,12 @@
 import React from 'react';
+import { useState, useMemo } from 'react';
 
 import { FormInputs, FormInputsSelect } from '.';
 import { useAppContext } from '../context/appContext';
 import Wrapper from '../assets/wrappers/SearchContainer';
 
 const SearchContainer = () => {
+    const [localSearch, setLocalSearch] = useState('');
     const {
         isLoading,
         search,
@@ -19,10 +21,6 @@ const SearchContainer = () => {
     } = useAppContext();
 
     const handleSearch = (e) => {
-        // optional
-        // if (isLoading) {
-        //     return;
-        // }
         handleChange({
             name: e.target.name,
             value: e.target.value
@@ -31,8 +29,30 @@ const SearchContainer = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
+        setLocalSearch('');
         clearFilters();
     };
+
+    // keep clearing the previous timeout and execute the handleChange 
+    // 1 second after the last update (in this case the last key press)
+    const debounce = () => {
+        let timeoutID;
+        return (e) => {
+            setLocalSearch(e.target.value);
+            clearTimeout(timeoutID);
+            timeoutID = setTimeout(() => {
+                handleChange({
+                    name: e.target.name,
+                    value: e.target.value
+                });
+            }, 1000);
+        };
+    };
+
+    // use memo for whatever is returning the debounce(), which is setLocalSearch(e)
+    // only run that once, when the app loads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const optimizedDebounce = useMemo(() => debounce(), []);
 
     return (
         <Wrapper>
@@ -40,7 +60,7 @@ const SearchContainer = () => {
                 <h4>search form</h4>
                 <div className='form-center'>
                     {/* search position */}
-                    <FormInputs type='text' labelText='search position' name='search' value={search} handleChange={handleSearch} />
+                    <FormInputs type='text' labelText='search position' name='search' value={localSearch} handleChange={optimizedDebounce} />
                     {/* filter status */}
                     <FormInputsSelect labelText='status' name='filterByStatus' value={filterByStatus} handleChange={handleSearch} list={['all', ...statusOptions]} />
                     {/* filter jobType */}

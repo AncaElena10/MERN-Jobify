@@ -10,7 +10,7 @@ const indexPath = path.join(clientBuildPath, 'index.html');
 
 // security packages
 const helmet = require('helmet');
-const xss = reqiure('xss-clean');
+const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 
 const appRouter = require('../routes');
