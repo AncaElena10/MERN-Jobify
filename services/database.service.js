@@ -5,7 +5,7 @@ const PublicMethods = {
         try {
             return mongoose.connect(url);
         } catch (error) {
-            console.log(`Error occured while trying to connect to mongo db: ${error}\n ${error.stack}`);
+            console.error(`Error occured while trying to connect to mongo db: ${error}\n ${error.stack}`);
         }
     },
 }

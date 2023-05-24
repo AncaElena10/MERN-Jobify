@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import Wrapper from '../assets/wrappers/RegisterPage';
-
 import { useAppContext } from '../context/appContext';
 import { Logo, FormInputs, Alert } from '../components';
 
@@ -47,10 +46,8 @@ const Register = () => {
 
         const currentUser = { name, email, password };
         if (hasAccount) {
-            console.log('User already has an account.');
             setupUser({ currentUser, endpoint: 'login', alertText: 'Login Successful! Redirecting...' });
         } else {
-            console.log('User does not have an account.');
             setupUser({ currentUser, endpoint: 'register', alertText: 'Account created! Redirecting...' });
         }
     };

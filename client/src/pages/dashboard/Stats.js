@@ -7,7 +7,8 @@ const Stats = () => {
     const { isLoading, monthlyApplications, getStatistics } = useAppContext();
 
     useEffect(() => {
-        getStatistics()
+        getStatistics();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (isLoading) {
@@ -17,7 +18,7 @@ const Stats = () => {
     return <>
         <StatsContainer />
         {monthlyApplications.length > 0 && <ChartsContainer />}
-    </>
-}
+    </>;
+};
 
 export default Stats;

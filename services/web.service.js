@@ -29,4 +29,4 @@ const initialSetup = async () => {
 
 module.exports = {
     initialSetup,
-}
+};

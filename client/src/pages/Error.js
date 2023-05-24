@@ -14,7 +14,6 @@ const Error = () => {
             </div>
         </Wrapper>
     );
-
 };
 
 export default Error;

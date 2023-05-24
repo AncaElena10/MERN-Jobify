@@ -28,7 +28,7 @@ const AddJob = () => {
         const value = event.target.value;
 
         handleChange({ name, value });
-    }
+    };
 
     const onSubmit = (event) => {
         event.preventDefault();
@@ -46,7 +46,7 @@ const AddJob = () => {
         }
 
         createJob(job);
-    }
+    };
 
     return (
         <Wrapper>

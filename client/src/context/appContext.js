@@ -1,7 +1,7 @@
 /* used to set global states (initial values) for the entire app */
 /* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 
 import reducer from './reducers';
@@ -37,24 +37,22 @@ const initialState = {
     jobType: 'full-time',
     statusOptions: ['pending', 'interview', 'declined'],
     status: 'pending',
-
-    //
     jobs: [],
     totalJobs: 0,
-    numOfPages: 1,
-    page: 1,
 
     // statistics
     statistics: {},
     monthlyApplications: [],
 
-    // filtering&sorting
+    // filtering&sorting&pagination
     // the default values for jobType and status are above (jobTypeOptions, statusOptions)
     search: '', // default value for search
     filterByStatus: 'all', // used for filter by status
     filterByJobType: 'all', // used for filter by jobType
     sort: 'latest', // default value for sort
     sortOptions: ['latest', 'oldest', 'a-z', 'z-a'], // used for sorting
+    numOfPages: 1, // used for pagination
+    page: 1, // used for pagination
 };
 
 const AppContext = React.createContext();
@@ -78,7 +76,6 @@ const AppProvider = ({ children }) => {
         return response;
     }, (error) => {
         if (error.response.status === 401) {
-            console.log('Auth error. Logging out...');
             logoutUser();
         }
         return Promise.reject(error);
@@ -127,7 +124,6 @@ const AppProvider = ({ children }) => {
 
             addUserToLocalStorage(payload);
         } catch (error) {
-            console.log(`Cannot setup the user.`);
             dispatch({
                 type: UserActions.USER_OPERATION_ERROR,
                 payload: { msg: `${error.response.data.message}` }
@@ -160,8 +156,6 @@ const AppProvider = ({ children }) => {
 
             addUserToLocalStorage(payload);
         } catch (error) {
-            console.log(`Cannot update the user.`);
-
             if (error.response.status !== 401) {
                 dispatch({
                     type: UserActions.USER_UPDATE_ERROR,
@@ -197,8 +191,6 @@ const AppProvider = ({ children }) => {
             dispatch({ type: JobsAction.CREATE_JOB_SUCCESS });
             dispatch({ type: OtherActions.CLEAR_VALUES });
         } catch (error) {
-            console.log(`Cannot create the job.`);
-
             if (error.response.status === 401) {
                 return;
             }
@@ -214,7 +206,7 @@ const AppProvider = ({ children }) => {
     const getJobs = async () => {
         const { page, search, filterByJobType, filterByStatus, sort } = state;
         const limitDefaultValue = 10;
-        
+
         let url = `/jobs?limit=${limitDefaultValue}&page=${page}&status=${filterByStatus}&jobType=${filterByJobType}&sort=${sort}`;
 
         if (search) {
@@ -236,10 +228,7 @@ const AppProvider = ({ children }) => {
                 payload: payload,
             });
         } catch (error) {
-            console.log(`Cannot retrieve the jobs.`);
-
-            // remember to de-comment this
-            // logoutUser(); 
+            logoutUser();
         } finally {
             hideAlert();
         }
@@ -262,8 +251,6 @@ const AppProvider = ({ children }) => {
             dispatch({ type: JobsAction.EDIT_JOB_SUCCESS });
             dispatch({ type: OtherActions.CLEAR_VALUES });
         } catch (error) {
-            console.log(`Cannot edit the job.`);
-
             if (error.response.status === 401) {
                 return;
             }
@@ -282,8 +269,7 @@ const AppProvider = ({ children }) => {
             await authFetch.delete(`/jobs/${id}`);
             getJobs();
         } catch (error) {
-            // remember to de-comment this
-            // logoutUser(); 
+            logoutUser();
         }
     };
 
@@ -301,10 +287,7 @@ const AppProvider = ({ children }) => {
                 payload: payload,
             });
         } catch (error) {
-            console.log(`Cannot retrieve the statistics.`);
-
-            // remember to de-comment this
-            // logoutUser(); 
+            logoutUser();
         } finally {
             hideAlert();
         }

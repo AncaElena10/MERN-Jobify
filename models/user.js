@@ -58,7 +58,7 @@ PrivateConstans.UserSchema.methods.createJWT = function () {
 
 PrivateConstans.UserSchema.methods.comparePassword = async function (incomingPassword) {
     return await bcrypt.compare(incomingPassword, this.password);
-}
+};
 
 const PublicConstants = {
     model: mongoose.model('User', PrivateConstans.UserSchema),
