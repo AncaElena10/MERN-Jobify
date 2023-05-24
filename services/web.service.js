@@ -38,9 +38,9 @@ const initialSetup = async () => {
 
     app.use(express.json());
 
-    app.use(helmet); // secured headers
-    app.use(xss); // make sure the input is sanitized
-    app.use(mongoSanitize); // prevents mongodb operator injection
+    app.use(helmet()); // secured headers
+    app.use(xss()); // make sure the input is sanitized
+    app.use(mongoSanitize()); // prevents mongodb operator injection
 
     app.use(appRouter, appMiddleware.notFound);
 
