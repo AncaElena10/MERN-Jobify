@@ -69,6 +69,15 @@ const PublicMethods = {
 
         return queryObject;
     },
+
+    attachCookie: (res, token) => {
+        const oneDay = 1000 * 60 * 60 * 26; // ms
+        res.cookie('token', token, {
+            httpOnly: true, // only the browser can access the token
+            expires: new Date(Date.now() + oneDay),
+            secure: process.env.NODE_ENV === 'production',
+        });
+    },
 };
 
 module.exports = { ...PublicMethods };

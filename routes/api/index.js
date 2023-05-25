@@ -15,6 +15,7 @@ const authMiddleware = require('../../middleware/app.middleware');
 
 // user
 // public APIs - do not require the token
+// TOOOOODDOOOOO - set /auth in front!!!
 router.post('/register', apiLimiter, authController.register);
 router.post('/login', apiLimiter, authController.login);
 // private APIs - require the token

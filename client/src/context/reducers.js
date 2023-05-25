@@ -44,7 +44,6 @@ const reducer = (state, action) => {
         case UserActions.USER_UPDATE_SUCCESS:
             obj = {
                 isLoading: false,
-                token: action.payload.token,
                 user: action.payload.user,
                 userLocation: action.payload.location,
                 jobLocation: action.payload.location,
@@ -74,12 +73,9 @@ const reducer = (state, action) => {
 
         case UserActions.LOGOUT_USER:
             obj = {
-                token: null,
-                user: null,
-                userLocation: '',
-                jobLocation: '',
+                userLoading: false,
             };
-            return { ...initialState, ...obj }; // return everything to the initial state, not just the user,token & locations
+            return { ...initialState, ...obj }; // return everything to the initial state, not just the user&locations
 
         case OtherActions.HANDLE_CHANGE:
             obj = {
@@ -167,6 +163,22 @@ const reducer = (state, action) => {
         case OtherActions.CHANGE_PAGE:
             obj = {
                 page: action.payload.page,
+            };
+            return { ...toReturn, ...obj };
+
+        case UserActions.GET_USER_BEGIN:
+            obj = {
+                userLoading: true,
+                showAlert: false,
+            };
+            return { ...toReturn, ...obj };
+
+        case UserActions.GET_USER_SUCCESS:
+            obj = {
+                userLoading: false,
+                user: action.payload.user,
+                userLocation: action.payload.location,
+                jobLocation: action.payload.location,
             };
             return { ...toReturn, ...obj };
 
