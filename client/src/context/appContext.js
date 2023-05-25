@@ -89,11 +89,12 @@ const AppProvider = ({ children }) => {
         }, 3000);
     };
 
+    // login + register user
     const setupUser = async ({ currentUser, endpoint, alertText }) => {
         dispatch({ type: UserActions.USER_OPERATION_BEGIN });
 
         try {
-            const response = await axios.post(`/api/v1/${endpoint}`, currentUser);
+            const response = await axios.post(`/api/v1/auth/${endpoint}`, currentUser);
             const payload = {
                 user: JSON.parse(response.headers['user']),
                 location: '',
@@ -114,19 +115,21 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // logout user
     const logoutUser = async () => {
         try {
-            await authFetch.delete(`/logout`);
-            
+            await authFetch.delete(`/auth/logout`);
+
             dispatch({ type: UserActions.LOGOUT_USER });
         } catch (e) { }
     };
 
+    // update user
     const updateUser = async (currentUser) => {
         dispatch({ type: UserActions.USER_UPDATE_BEGIN });
 
         try {
-            const response = await authFetch.patch(`updateUser`, currentUser);
+            const response = await authFetch.patch(`/auth/updateUser`, currentUser);
             const payload = {
                 user: JSON.parse(response.headers['user']),
                 location: (JSON.parse(response.headers['user'])).location,
@@ -148,6 +151,29 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // get user
+    const getUser = async () => {
+        dispatch({ type: UserActions.GET_USER_BEGIN });
+
+        try {
+            const response = await authFetch.get(`/auth/user`);
+            const payload = {
+                user: response.data,
+                location: response.data.location,
+            };
+
+            dispatch({
+                type: UserActions.GET_USER_SUCCESS,
+                payload: payload,
+            });
+        } catch (error) {
+            if (error.response.status === 401) {
+                return;
+            }
+            logoutUser();
+        }
+    };
+
     const toggleSidebar = () => {
         dispatch({ type: OtherActions.TOGGLE_SIDEBAR });
     };
@@ -163,6 +189,7 @@ const AppProvider = ({ children }) => {
         dispatch({ type: OtherActions.CLEAR_VALUES });
     };
 
+    // add job
     const createJob = async (job) => {
         dispatch({ type: JobsAction.CREATE_JOB_BEGIN });
 
@@ -184,10 +211,10 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // get all jobs
     const getJobs = async () => {
         const { page, search, filterByJobType, filterByStatus, sort } = state;
         const limitDefaultValue = 10;
-
         let url = `/jobs?limit=${limitDefaultValue}&page=${page}&status=${filterByStatus}&jobType=${filterByJobType}&sort=${sort}`;
 
         if (search) {
@@ -223,6 +250,7 @@ const AppProvider = ({ children }) => {
         });
     };
 
+    // edit job
     const editJob = async (job) => {
         dispatch({ type: JobsAction.EDIT_JOB_BEGIN });
 
@@ -244,6 +272,7 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // delete job
     const deleteJob = async (id) => {
         dispatch({ type: JobsAction.DELETE_JOB_BEGIN });
 
@@ -255,6 +284,7 @@ const AppProvider = ({ children }) => {
         }
     };
 
+    // get jobs statistics
     const getStatistics = async () => {
         dispatch({ type: OtherActions.SHOW_STATS_BEGIN });
         try {
@@ -284,28 +314,6 @@ const AppProvider = ({ children }) => {
             type: OtherActions.CHANGE_PAGE,
             payload: { page }
         });
-    };
-
-    const getUser = async () => {
-        dispatch({ type: UserActions.GET_USER_BEGIN });
-
-        try {
-            const response = await authFetch.get(`/user`);
-            const payload = {
-                user: response.data,
-                location: response.data.location,
-            };
-
-            dispatch({
-                type: UserActions.GET_USER_SUCCESS,
-                payload: payload,
-            });
-        } catch (error) {
-            if (error.response.status === 401) {
-                return;
-            }
-            logoutUser();
-        }
     };
 
     useEffect(() => {

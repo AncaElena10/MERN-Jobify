@@ -15,13 +15,12 @@ const authMiddleware = require('../../middleware/app.middleware');
 
 // user
 // public APIs - do not require the token
-// TOOOOODDOOOOO - set /auth in front!!!
-router.post('/register', apiLimiter, authController.register);
-router.post('/login', apiLimiter, authController.login);
+router.post(`${AppConstants.RouteKeys.auth}/register`, apiLimiter, authController.register);
+router.post(`${AppConstants.RouteKeys.auth}/login`, apiLimiter, authController.login);
 // private APIs - require the token
-router.patch('/updateUser', authMiddleware.auth, authController.update);
-router.get('/user', authMiddleware.auth, authController.getOne);
-router.delete('/logout', authController.logout);
+router.patch(`${AppConstants.RouteKeys.auth}/updateUser`, authMiddleware.auth, authController.update);
+router.get(`${AppConstants.RouteKeys.auth}/user`, authMiddleware.auth, authController.getOne);
+router.delete(`${AppConstants.RouteKeys.auth}/logout`, authController.logout);
 
 // jobs
 // private APIs - require the token

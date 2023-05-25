@@ -30,7 +30,7 @@ const PrivateConstans = {
         password: {
             type: String,
             require: [true, 'Please provide password'],
-            minLength: 3, // TODO - change this
+            minLength: 6,
             select: false,
         },
         location: {
