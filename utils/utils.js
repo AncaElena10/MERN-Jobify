@@ -78,6 +78,13 @@ const PublicMethods = {
             secure: process.env.NODE_ENV === 'production',
         });
     },
+
+    deleteCookie: (res, value) => {
+        res.cookie('token', value, {
+            httpOnly: true,
+            expires: new Date(Date.now()),
+        });
+    },
 };
 
 module.exports = { ...PublicMethods };
