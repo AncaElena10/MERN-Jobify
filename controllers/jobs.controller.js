@@ -202,7 +202,7 @@ const PublicMethods = {
             const jobId = req.params.id;
             const job = await JobsService.getJobById(jobId);
 
-            if (!job || !hasAccess(req.user, job.createdBy)) {
+            if (!job || !utils.checkPermissions(req.user, job.createdBy)) {
                 console.debug(`Couldn't find the job with id ${jobId}`);
                 return res.status(StatusCodes.NOT_FOUND).send(ErrorMessages.NOT_FOUND_MESSAGES.E4040002);
             }
