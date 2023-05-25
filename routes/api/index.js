@@ -21,6 +21,7 @@ router.post('/login', apiLimiter, authController.login);
 // private APIs - require the token
 router.patch('/updateUser', authMiddleware.auth, authController.update);
 router.get('/user', authMiddleware.auth, authController.getOne);
+router.delete('/logout', authController.logout);
 
 // jobs
 // private APIs - require the token

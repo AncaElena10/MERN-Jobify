@@ -189,10 +189,20 @@ const PublicMethods = {
 
             res.status(StatusCodes.OK).send(userBody);
         } catch (error) {
-            console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);
+            console.error(`An error occurred while trying to get user: ${error}\n${error.stack}`);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
         }
     },
+
+    logout: async (req, res) => {
+        try {
+            utils.deleteCookie(res, '');
+            res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
+        } catch (error) {
+            console.error(`An error occurred while trying to logout user: ${error}\n${error.stack}`);
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);
+        }
+    }
 };
 
 module.exports = { ...PublicMethods };

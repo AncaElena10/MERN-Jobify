@@ -114,8 +114,12 @@ const AppProvider = ({ children }) => {
         }
     };
 
-    const logoutUser = () => {
-        dispatch({ type: UserActions.LOGOUT_USER });
+    const logoutUser = async () => {
+        try {
+            await authFetch.delete(`/logout`);
+            
+            dispatch({ type: UserActions.LOGOUT_USER });
+        } catch (e) { }
     };
 
     const updateUser = async (currentUser) => {
