@@ -11,6 +11,10 @@ const UserActions = {
     USER_UPDATE_BEGIN: 'USER_UPDATE_BEGIN',
     USER_UPDATE_SUCCESS: 'USER_UPDATE_SUCCESS',
     USER_UPDATE_ERROR: 'USER_UPDATE_ERROR',
+
+    // user GET constants
+    GET_USER_BEGIN: 'GET_USER_BEGIN',
+    GET_USER_SUCCESS: 'GET_USER_SUCCESS',
 };
 
 export default UserActions;

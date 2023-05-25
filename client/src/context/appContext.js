@@ -1,7 +1,7 @@
 /* used to set global states (initial values) for the entire app */
 /* grabs the data from functions (Register.js, Profile.js for eg.) and sends it to reducers */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 
 import reducer from './reducers';
@@ -13,22 +13,18 @@ import {
     JobsAction
 } from './actions';
 
-const user = localStorage.getItem('user');
-const token = localStorage.getItem('token');
-const location = localStorage.getItem('location');
-
 const initialState = {
+    userLoading: true, // setup to true or either logged out immediately
     isLoading: false,
     showAlert: false,
     alertText: '',
     alertType: '',
-    user: user ? JSON.parse(user) : null,
-    token: token,
-    userLocation: location || '',
+    user: null,
+    userLocation: '',
     showSidebar: false,
 
     // for jobs
-    jobLocation: location || '',
+    jobLocation: '',
     isEditing: false,
     editJobId: '',
     position: '',
@@ -63,13 +59,13 @@ const AppProvider = ({ children }) => {
         baseURL: '/api/v1',
     });
 
-    // request
-    authFetch.interceptors.request.use((config) => {
-        config.headers['Authorization'] = `Bearer ${state.token}`;
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
+    // request - no longer required when using cookies
+    // authFetch.interceptors.request.use((config) => {
+    //     config.headers['Authorization'] = `Bearer ${state.token}`;
+    //     return config;
+    // }, (error) => {
+    //     return Promise.reject(error);
+    // });
 
     // response
     authFetch.interceptors.response.use((response) => {
@@ -93,18 +89,6 @@ const AppProvider = ({ children }) => {
         }, 3000);
     };
 
-    const addUserToLocalStorage = ({ user, token, location }) => {
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('token', token);
-        localStorage.setItem('location', location);
-    };
-
-    const removeUserFromLocalStorage = () => {
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        localStorage.removeItem('location');
-    };
-
     const setupUser = async ({ currentUser, endpoint, alertText }) => {
         dispatch({ type: UserActions.USER_OPERATION_BEGIN });
 
@@ -112,7 +96,6 @@ const AppProvider = ({ children }) => {
             const response = await axios.post(`/api/v1/${endpoint}`, currentUser);
             const payload = {
                 user: JSON.parse(response.headers['user']),
-                token: response.headers['token'],
                 location: '',
                 alertText: alertText
             };
@@ -121,8 +104,6 @@ const AppProvider = ({ children }) => {
                 type: UserActions.USER_OPERATION_SUCCESS,
                 payload: payload
             });
-
-            addUserToLocalStorage(payload);
         } catch (error) {
             dispatch({
                 type: UserActions.USER_OPERATION_ERROR,
@@ -135,7 +116,6 @@ const AppProvider = ({ children }) => {
 
     const logoutUser = () => {
         dispatch({ type: UserActions.LOGOUT_USER });
-        removeUserFromLocalStorage();
     };
 
     const updateUser = async (currentUser) => {
@@ -145,7 +125,6 @@ const AppProvider = ({ children }) => {
             const response = await authFetch.patch(`updateUser`, currentUser);
             const payload = {
                 user: JSON.parse(response.headers['user']),
-                token: response.headers['token'],
                 location: (JSON.parse(response.headers['user'])).location,
             };
 
@@ -153,8 +132,6 @@ const AppProvider = ({ children }) => {
                 type: UserActions.USER_UPDATE_SUCCESS,
                 payload: payload
             });
-
-            addUserToLocalStorage(payload);
         } catch (error) {
             if (error.response.status !== 401) {
                 dispatch({
@@ -265,6 +242,7 @@ const AppProvider = ({ children }) => {
 
     const deleteJob = async (id) => {
         dispatch({ type: JobsAction.DELETE_JOB_BEGIN });
+
         try {
             await authFetch.delete(`/jobs/${id}`);
             getJobs();
@@ -304,11 +282,32 @@ const AppProvider = ({ children }) => {
         });
     };
 
-    // setup on initial render - check / GET
-    // testing purpose
-    // useEffect(() => {
-    //     getStatistics()
-    // }, []);
+    const getUser = async () => {
+        dispatch({ type: UserActions.GET_USER_BEGIN });
+
+        try {
+            const response = await authFetch.get(`/user`);
+            const payload = {
+                user: response.data,
+                location: response.data.location,
+            };
+
+            dispatch({
+                type: UserActions.GET_USER_SUCCESS,
+                payload: payload,
+            });
+        } catch (error) {
+            if (error.response.status === 401) {
+                return;
+            }
+            logoutUser();
+        }
+    };
+
+    useEffect(() => {
+        getUser();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <AppContext.Provider value={

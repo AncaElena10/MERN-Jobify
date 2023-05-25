@@ -17,14 +17,12 @@ const PublicMethods = {
     },
 
     auth: (req, res, next) => {
-        const authHeader = req.headers.authorization;
+        const token = req.cookies.token;
 
-        if (!authHeader || !authHeader.startsWith('Bearer')) {
+        if (!token) {
             console.debug(`[MIDDLEWARE] User is not authenticated, unable to access the PATH ${req.originalUrl}.`);
             return res.status(StatusCodes.UNAUTHORIZED).send(ErrorMessages.UNAUTHORIZED_MESSAGES.E4010002);
         }
-
-        const token = authHeader.split(' ')[1];
 
         try {
             const payload = jwt.verify(token, process.env.JWT_SECRET);

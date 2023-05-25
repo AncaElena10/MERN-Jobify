@@ -3,6 +3,7 @@ const Joi = require('joi');
 
 const UserService = require('../services/user.service');
 const ErrorMessages = require('../messages');
+const utils = require('../utils/utils');
 
 const PrivateConstants = {
     RequiredPropertiesRegister: ['name', 'password', 'email'],
@@ -87,8 +88,9 @@ const PublicMethods = {
             const token = userSavedToDb.createJWT();
             const userBodyHeader = PrivateMethods.defaultUser(userSavedToDb);
 
-            res.setHeader('token', token);
             res.setHeader('user', JSON.stringify(userBodyHeader));
+
+            utils.attachCookie(res, token);
 
             res.status(StatusCodes.CREATED).send(ErrorMessages.CREATED_MESSAGES.E2010001);
         } catch (error) {
@@ -123,8 +125,9 @@ const PublicMethods = {
             const token = currentUser.createJWT();
             const userBodyHeader = PrivateMethods.defaultUser(currentUser);
 
-            res.setHeader('token', token);
             res.setHeader('user', JSON.stringify(userBodyHeader));
+
+            utils.attachCookie(res, token);
 
             res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
         } catch (error) {
@@ -162,8 +165,9 @@ const PublicMethods = {
             user = await UserService.getUserById(userId);
             const token = user.createJWT();
 
-            res.setHeader('token', token);
             res.setHeader('user', JSON.stringify(userToUpdateBody));
+
+            utils.attachCookie(res, token);
 
             res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
         } catch (error) {
@@ -174,19 +178,16 @@ const PublicMethods = {
 
     getOne: async (req, res) => {
         try {
-            const userId = req.user.userId;
-            const user = await UserService.getUserById(userId);
-            const token = user.createJWT();
+            const user = await UserService.getUserById(req.user.userId);
 
             if (!user) {
                 console.debug(`User ${userId} not found`);
                 throw new Error(`User not found.`);
             }
 
-            res.setHeader('token', token);
-            res.setHeader('user', JSON.stringify(user));
+            const userBody = PrivateMethods.defaultUser(user);
 
-            res.status(StatusCodes.OK).send(ErrorMessages.SUCCESS_MESSAGES.E2000001);
+            res.status(StatusCodes.OK).send(userBody);
         } catch (error) {
             console.error(`An error occurred while trying to login user: ${error}\n${error.stack}`);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(ErrorMessages.INTERNAL_SERVER_ERROR_MESSAGES.E5000001);

@@ -2,6 +2,7 @@ const http = require('http');
 const express = require('express');
 // const cors = require('cors');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 
 // build app
 const path = require('path');
@@ -37,6 +38,7 @@ const initialSetup = async () => {
     app.use(express.static(path.resolve(clientBuildPath)));
 
     app.use(express.json());
+    app.use(cookieParser());
 
     app.use(helmet()); // secured headers
     app.use(xss()); // make sure the input is sanitized
