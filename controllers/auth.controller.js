@@ -16,8 +16,8 @@ const PrivateConstants = {
             .max(20)
             .required(),
         password: Joi.string()
-            .min(3) // TODO - change this
-            .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+            .min(6)
+            .regex(/[0-9a-zA-Z]*\d[0-9a-zA-Z]*/)
             .required(),
         email: Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
@@ -25,6 +25,8 @@ const PrivateConstants = {
     }).options({ allowUnknown: true }),
     LoginSchemaValidator: Joi.object({
         password: Joi.string()
+            .min(6)
+            .regex(/[0-9a-zA-Z]*\d[0-9a-zA-Z]*/)
             .required(),
         email: Joi.string()
             .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
@@ -71,6 +73,11 @@ const PublicMethods = {
 
             // missing/invalid properties
             if ((validationResult.error && validationResult.error.details)) {
+                if ((validationResult.error.details[0].path.includes('password'))) {
+                    console.debug('Weak password.');
+                    return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000008);
+                }
+
                 console.debug(`The following properties must be provided: ${JSON.stringify(PrivateConstants.RequiredPropertiesRegister)}`);
                 return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000001);
             }
@@ -106,6 +113,11 @@ const PublicMethods = {
 
             // missing/invalid properties
             if ((validationResult.error && validationResult.error.details)) {
+                if ((validationResult.error.details[0].path.includes('password'))) {
+                    console.debug('Weak password.');
+                    return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000008);
+                }
+
                 console.debug(`The following properties must be provided: ${JSON.stringify(PrivateConstants.RequiredPropertiesLogin)}`);
                 return res.status(StatusCodes.BAD_REQUEST).send(ErrorMessages.BAD_REQUEST_MESSAGES.E4000003);
             }

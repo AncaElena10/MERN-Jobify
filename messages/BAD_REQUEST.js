@@ -40,6 +40,12 @@ const PublicConstants = {
         'message': 'Invalid value for jobType.',
         'summary': 'The jobType property must be provided and must have one of the values: full-time, part-time, remote, intership.',
         'action': 'Please retry the operation with a valid body.'
+    },
+    'E4000008': {
+        'code': 'E4000008',
+        'message': 'Invalid value for password.',
+        'summary': 'The password must contain at least 5 letters and 1 number.',
+        'action': 'Please retry the operation with a valid password.'
     }
 };
 
